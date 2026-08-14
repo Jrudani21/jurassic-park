@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JURASSIC PARK - AI Fleet Monitor</title>
+<meta name="description" content="Live dashboard for Janak's AI bot fleet, themed as a dinosaur park: staff are bots, species are the 8 LLM model tiers, DNA is tokens, the budget ledger is every real API call. Data driven by data.js.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@400;500;600;800&family=Space+Grotesk:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07100a;
+  --bg2:#0a0a10;
+  --panel:#101018;
+  --panel2:#0c0c14;
+  --line:rgba(255,255,255,.08);
+  --line2:rgba(255,255,255,.13);
+  --green:#00e5a0;
+  --violet:#8b7cf6;
+  --amber:#ffd166;
+  --red:#ff6b6b;
+  --grey:#7d8494;
+  --txt:#e8eaf0;
+  --dim:#9aa1b2;
+  --mono:'VT323',monospace;
+  --disp:'Unbounded',sans-serif;
+  --body:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* faint park grid + top glow (amber over green, JWE control-room vibe) */
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(900px 420px at 20% -10%, rgba(255,209,102,.07), transparent 60%),
+    radial-gradient(800px 400px at 90% -10%, rgba(0,229,160,.05), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 44px);
+}
+a{color:var(--green);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+::selection{background:rgba(255,209,102,.25)}
+
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 18px}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(5,5,8,.88);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding-top:10px;padding-bottom:10px;
+}
+.brand{display:flex;align-items:center;gap:10px;min-height:44px}
+.brand-mark{width:22px;height:22px;color:var(--amber);flex:none;filter:drop-shadow(0 0 6px rgba(245,166,35,.55))}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.brand-name{
+  font-family:'Bebas Neue',var(--disp);font-weight:400;font-size:24px;letter-spacing:.14em;
+  color:var(--txt);
+}
+.brand-name em{font-style:normal;color:var(--amber)}
+.brand-sub{font-family:var(--mono);font-size:17px;color:var(--dim);letter-spacing:.02em}
+.topbar nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.topbar nav a{
+  color:var(--dim);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:12px 11px;min-height:44px;display:flex;align-items:center;border-radius:6px;
+  transition:color .15s, background .15s;
+}
+.topbar nav a:hover{color:var(--amber);background:rgba(255,209,102,.06);text-decoration:none}
+.topbar nav a:focus-visible{outline-offset:-2px}
+/* electric fence hazard tape along the top edge (mirrors analytics.html) */
+.topbar::before{content:"";display:block;height:4px;background:repeating-linear-gradient(45deg,#ffd166 0 8px,#050508 8px 16px)}
+.topbar nav a.now{color:var(--amber);background:rgba(255,209,102,.08)}
+/* secondary compact row: in-page section anchors */
+.topbar .subnav{margin-left:0;flex:1 1 100%;order:4;gap:2px;border-top:1px solid rgba(255,255,255,.05);padding:6px 0 0;margin-top:2px}
+.topbar .subnav a{font-size:12px;letter-spacing:.08em;padding:8px 10px;min-height:44px}
+.topbar .subnav a:hover{color:var(--amber)}
+.clock{
+  font-family:var(--mono);font-size:18px;color:var(--green);
+  letter-spacing:.05em;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;min-height:44px;
+}
+.clock::before{content:"";width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 8px rgba(0,229,160,.9)}
+
+/* ---------- lede ---------- */
+.lede{
+  font-family:var(--mono);font-size:19px;color:var(--amber);
+  letter-spacing:.03em;margin:6px 0 26px;
+}
+.lede .l-dim{color:var(--dim)}
+.about{
+  font-family:var(--mono);font-size:17px;color:var(--dim);line-height:1.55;
+  background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--amber);
+  border-radius:8px;padding:13px 18px;margin:0 0 26px;
+}
+.about b{color:var(--amber);font-weight:400}
+
+/* ---------- section scaffolding ---------- */
+main{padding:28px 0 10px}
+section{margin-bottom:46px;scroll-margin-top:80px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.sec-idx{
+  font-family:var(--mono);font-size:18px;color:var(--amber);letter-spacing:.08em;
+}
+.sec-title{
+  font-family:var(--disp);font-weight:500;font-size:14px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--txt);
+}
+.sec-rule{flex:1;height:1px;background:var(--line)}
+.sec-note{font-family:var(--mono);font-size:16px;color:var(--dim)}
+
+.panel{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+}
+.panel-head{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;border-bottom:1px solid var(--line);
+  background:var(--panel);
+}
+.panel-title{font-family:var(--mono);font-size:18px;color:var(--txt);letter-spacing:.05em}
+.panel-title .dot{color:var(--amber)}
+.panel-tag{margin-left:auto;font-family:var(--mono);font-size:16px;color:var(--dim)}
+
+/* ---------- stat readout ---------- */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+}
+.stat-cell{
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px 12px;min-height:96px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  transition:border-color .15s, transform .15s;
+}
+.stat-cell:hover{border-color:var(--line2);transform:translateY(-1px)}
+.stat-label{
+  font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+}
+.stat-num{
+  font-family:var(--mono);font-size:36px;line-height:1;color:var(--green);
+  letter-spacing:.02em;
+}
+.stat-cell[data-accent="violet"] .stat-num{color:var(--violet)}
+.stat-cell[data-accent="amber"] .stat-num{color:var(--amber)}
+.stat-cell[data-accent="red"] .stat-num{color:var(--red)}
+.stat-cell[data-accent="grey"] .stat-num{color:var(--grey)}
+.stat-foot{font-family:var(--mono);font-size:15px;color:var(--dim)}
+
+/* ---------- species ---------- */
+.tier-list{padding:8px 16px 14px}
+.tier-row{
+  display:grid;grid-template-columns:170px 1fr 96px;align-items:center;gap:14px;
+  padding:9px 0;border-bottom:1px solid rgba(255,255,255,.045);
+}
+.tier-row:last-child{border-bottom:none}
+.tier-name{
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:19px;color:var(--txt);letter-spacing:.03em;
+}
+.tier-name .t-tier{font-size:14px;color:var(--dim)}
+.tier-sq{width:9px;height:9px;border-radius:2px;flex:none}
+.tier-bar-wrap{height:14px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;position:relative}
+.tier-bar{height:100%;border-radius:3px;transform-origin:left;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.tier-count{font-family:var(--mono);font-size:17px;color:var(--txt);text-align:right;white-space:nowrap}
+.tier-count small{color:var(--dim);font-size:15px}
+.tier-note{font-family:var(--mono);font-size:16px;color:var(--dim);padding:8px 2px 2px}
+.tier-note .n-tag{color:var(--amber)}
+.tier-note .n-dim{color:#5c6575}
+/* persistent species legend (canonical swatches, all tiers) */
+.sp-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;padding:10px 14px;background:var(--bg2);border:1px solid var(--line);border-radius:10px}
+.sp-legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:16px;color:var(--dim)}
+.sp-legend b{color:var(--txt);font-weight:400}
+.sp-legend i{font-style:normal;color:#5c6575;font-size:14px}
+
+/* ---------- divisions ---------- */
+.crew-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.crew-card{
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+  padding:16px 16px 14px;position:relative;overflow:hidden;
+  transition:border-color .15s, transform .15s;
+}
+.crew-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--crew)}
+.crew-card:hover{border-color:var(--line2);transform:translateY(-1px)}
+.crew-top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.crew-name{font-family:var(--disp);font-weight:500;font-size:15px;letter-spacing:.04em;color:var(--crew)}
+.crew-id{font-family:var(--mono);font-size:16px;color:var(--dim)}
+.crew-members-count{
+  margin-left:auto;font-family:var(--mono);font-size:17px;color:var(--txt);
+  border:1px solid var(--line2);border-radius:6px;padding:2px 10px;
+}
+.crew-coord{font-family:var(--mono);font-size:16px;color:var(--dim);margin-bottom:10px}
+.crew-coord b{color:var(--txt);font-weight:400}
+.crew-coord .star{color:var(--amber)}
+.crew-coord .boss-tag{
+  color:#050508;background:var(--amber);border-radius:4px;padding:1px 7px;
+  font-size:15px;letter-spacing:.04em;margin-left:6px;
+}
+.crew-members{display:flex;flex-wrap:wrap;gap:6px}
+.member-chip{
+  font-family:var(--mono);font-size:16px;color:var(--dim);
+  border:1px solid var(--line);border-radius:5px;padding:3px 9px;
+  background:rgba(255,255,255,.02);
+  transition:color .15s,border-color .15s;
+}
+.member-chip:hover{color:var(--crew);border-color:var(--crew)}
+.member-chip.standby{color:var(--amber)}
+.member-chip.standby:hover{color:var(--amber);border-color:var(--amber)}
+.member-chip .m-star{color:var(--amber)}
+
+/* ---------- terminal ---------- */
+.terminal{
+  background:#05060a;
+  border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.term-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel);
+}
+.term-dots{display:flex;gap:6px}
+.term-dots i{width:9px;height:9px;border-radius:50%;display:block}
+.term-dots i:nth-child(1){background:var(--red)}
+.term-dots i:nth-child(2){background:var(--amber)}
+.term-dots i:nth-child(3){background:var(--green)}
+.term-title{font-family:var(--mono);font-size:19px;color:var(--amber);letter-spacing:.05em;text-transform:uppercase}
+.term-title .ok{color:var(--green)}
+.term-live{margin-left:auto;font-family:var(--mono);font-size:16px;color:var(--green);display:flex;align-items:center;gap:6px}
+.term-live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s ease-in-out infinite}
+.term-body{
+  height:440px;overflow-y:auto;padding:14px 16px;
+  font-family:var(--mono);font-size:18px;line-height:1.4;color:#c8ffe9;
+  position:relative;
+}
+.term-body::after{ /* scanlines */
+  content:"";position:sticky;bottom:0;left:0;right:0;height:100%;pointer-events:none;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px);
+  opacity:.35;display:block;height:100%;
+}
+.t-line{white-space:pre-wrap;word-break:break-word;min-height:1.4em}
+.t-line .c-green{color:var(--green)}
+.t-line .c-violet{color:var(--violet)}
+.t-line .c-amber{color:var(--amber)}
+.t-line .c-red{color:var(--red)}
+.t-line .c-dim{color:#7f8a99}
+.t-line.c-prompt{color:var(--amber)}
+.t-line.c-prompt .p-path{color:var(--dim)}
+.t-line.c-cursor::after{
+  content:"█";color:var(--amber);animation:blink 1s steps(1) infinite;
+  margin-left:2px;
+}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+.term-form{display:flex;align-items:center;gap:0;border-top:1px solid var(--line);background:var(--panel2)}
+.term-prompt{
+  font-family:var(--mono);font-size:19px;color:var(--amber);
+  padding:0 0 0 16px;white-space:nowrap;user-select:none;
+}
+.term-input{
+  flex:1;background:transparent;border:none;outline:none;color:#eafff5;
+  font-family:var(--mono);font-size:19px;padding:13px 16px 13px 6px;min-height:46px;
+  caret-color:var(--amber);
+}
+.term-input::placeholder{color:#4a5568}
+
+/* ---------- ledger ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.chip{
+  font-family:var(--mono);font-size:17px;color:var(--dim);
+  background:rgba(255,255,255,.03);border:1px solid var(--line);
+  border-radius:6px;padding:10px 16px;min-height:44px;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  transition:color .15s,border-color .15s,background .15s;
+}
+.chip:hover{color:var(--txt);border-color:var(--line2)}
+.chip.on{color:#050508;background:var(--amber);border-color:var(--amber);font-weight:600}
+.chip .c-sq{width:8px;height:8px;border-radius:2px;display:inline-block}
+.chip.on .c-sq{background:#050508}
+.ledger-scroll{overflow-x:auto}
+table.ledger{
+  width:100%;border-collapse:collapse;min-width:700px;
+  font-family:var(--mono);font-size:16px;
+}
+.ledger thead th{
+  text-align:left;font-weight:400;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;
+  font-size:13px;padding:10px 14px;border-bottom:1px solid var(--line2);
+  position:sticky;top:0;background:var(--panel);z-index:2;white-space:nowrap;
+}
+.ledger tbody td{
+  padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.045);
+  white-space:nowrap;vertical-align:middle;
+}
+.ledger tbody tr{transition:background .12s}
+.ledger tbody tr:hover{background:rgba(255,209,102,.05)}
+.ledger .t-tier{display:inline-flex;align-items:center;gap:8px;color:var(--txt)}
+.ledger .t-tier .sp-model{color:var(--dim);font-size:14px;margin-left:2px}
+.ledger .t-cost{text-align:right;color:var(--green)}
+.ledger .t-cost.zero{color:#566070}
+.ledger .t-cache{color:var(--violet)}
+.ledger .t-ts{color:var(--dim)}
+.ledger .t-num{text-align:right;color:var(--txt)}
+.ledger .t-model{color:var(--txt);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.ledger tfoot td{
+  padding:10px 14px;font-size:16px;color:var(--dim);border-top:1px solid var(--line2);
+}
+.ledger tfoot .t-total{color:var(--amber);font-size:17px}
+.ledger .empty-row td{color:var(--dim);text-align:center;padding:22px 14px;font-size:17px}
+
+/* ---------- infrastructure + labs legend ---------- */
+.legend-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:12px}
+.legend-panel{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.legend-title{
+  font-family:var(--disp);font-weight:500;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:10px;
+}
+.legend-row{display:flex;flex-wrap:wrap;gap:6px}
+.lg-chip{
+  font-family:var(--mono);font-size:16px;color:var(--dim);
+  border:1px solid var(--line);border-radius:5px;padding:4px 10px;
+  background:rgba(255,255,255,.02);display:inline-flex;align-items:center;gap:7px;
+}
+.lg-chip b{color:var(--txt);font-weight:400}
+.lg-chip i{
+  font-style:normal;color:var(--amber);
+}
+.lg-chip .lg-note{color:#5c6575;font-size:14px}
+
+/* ---------- diagrams ---------- */
+.diag-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.diag-thumb{
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  cursor:zoom-in;display:block;position:relative;
+  transition:border-color .15s, transform .15s;
+}
+.diag-thumb:hover{border-color:var(--amber);transform:translateY(-1px)}
+.diag-thumb img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#0b0b12}
+.diag-thumb .diag-cap{
+  display:flex;align-items:center;gap:8px;padding:9px 12px;
+  font-family:var(--mono);font-size:16px;color:var(--dim);
+}
+.diag-thumb:hover .diag-cap{color:var(--amber)}
+.diag-thumb .diag-cap::before{content:"+";color:var(--amber);font-size:18px}
+
+/* ---------- lightbox ---------- */
+.lightbox{
+  position:fixed;inset:0;z-index:100;background:rgba(3,3,5,.92);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  padding:24px;opacity:0;pointer-events:none;transition:opacity .18s ease;
+}
+.lightbox.open{opacity:1;pointer-events:auto}
+.lightbox img{
+  max-width:min(94vw,1200px);max-height:78vh;border:1px solid var(--line2);border-radius:8px;
+  background:#0b0b12;box-shadow:0 24px 80px rgba(0,0,0,.6);
+}
+.lightbox .lb-cap{font-family:var(--mono);font-size:17px;color:var(--dim)}
+.lightbox .lb-close{
+  position:absolute;top:18px;right:18px;
+  font-family:var(--mono);font-size:20px;color:var(--txt);
+  background:var(--panel);border:1px solid var(--line2);border-radius:8px;
+  min-width:48px;min-height:48px;cursor:pointer;transition:color .15s,border-color .15s;
+}
+.lightbox .lb-close:hover{color:var(--amber);border-color:var(--amber)}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px}
+.foot-row{
+  display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;
+  font-family:var(--mono);font-size:16px;color:var(--dim);
+}
+.foot-row .f-green{color:var(--amber)}
+.foot-row a{color:var(--dim);border-bottom:1px solid var(--line2)}
+.foot-row a:hover{color:var(--amber);text-decoration:none}
+.foot-data{display:flex;align-items:center;gap:8px}
+.foot-data::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px rgba(255,209,102,.8)}
+
+/* ---------- responsive ---------- */
+@media(min-width:640px){
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+  .crew-grid{grid-template-columns:repeat(2,1fr)}
+  .legend-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:900px){
+  .diag-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(min-width:1180px){
+  .stats-grid{grid-template-columns:repeat(6,1fr)}
+  .crew-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:640px){
+  .topbar nav{order:3;width:100%;overflow-x:auto;padding-bottom:2px}
+  .tier-row{grid-template-columns:150px 1fr 82px;gap:10px}
+  .term-body{height:400px}
+  .clock{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001s !important;transition-duration:.001s !important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V7M18 21V7M3 7h18M5 11h14M7 15h10M6 21h12"/></svg>
+        <span class="brand-name">JURASSIC <em>PARK</em></span>
+        <span class="brand-sub">live AI fleet monitor / data.js</span>
+      </div>
+      <nav aria-label="Pages">
+        <a class="now" aria-current="page" href="index.html">Dashboard</a>
+        <a href="teams.html">Staff</a>
+        <a href="analytics.html">Budget</a>
+        <a href="process.html">Process</a>
+        <a href="runbook.html">Runbook</a>
+      </nav>
+      <nav class="subnav" aria-label="Sections">
+        <a href="#overview">Readout</a>
+        <a href="#tiers">Species</a>
+        <a href="#crews">Divisions</a>
+        <a href="#console">Console</a>
+        <a href="#ledger">Budget</a>
+        <a href="#diagrams">Park map</a>
+      </nav>
+      <div class="clock" id="clock" aria-label="Current time"></div>
+    </div>
+  </header>
+
+  <main>
+
+    <p class="lede" id="lede"><span id="lede-staff">0</span> staff <span class="l-dim">·</span> <span id="lede-crews">0</span> divisions <span class="l-dim">·</span> <span id="lede-species">0</span> dinosaur species <span class="l-dim">·</span> running 24/7 on one PC</p>
+
+    <div class="about" id="about">
+      <b>What this is:</b> a live map of Janak's AI bot fleet, dressed as Jurassic Park's Isla Nublar
+      ops (the theme is a memory aid - every number here is real, from <b>data.js</b>).
+      <b>Staff</b> = bots. <b>Species</b> = the 8 LLM model tiers (Triceratops = everyday DeepSeek
+      flash, T-Rex = heavy reasoning, Indominus = frontier Claude). <b>DNA</b> = tokens.
+      <b>Budget ledger</b> = every API call the fleet has made. Browse Staff for who runs what,
+      Budget for the money (almost none), Incident Reports for what broke and how it was fixed.
+    </div>
+
+    <!-- 01 stats -->
+    <section id="overview">
+      <div class="sec-head">
+        <span class="sec-idx">01</span>
+        <h2 class="sec-title">Park readout</h2>
+        <span class="sec-rule"></span>
+        <span class="sec-note" id="readout-note">counting from data.js</span>
+      </div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-cell" data-accent="green"><span class="stat-label">Staff in park</span><span class="stat-num" id="stat-bots">0</span><span class="stat-foot">registered</span></div>
+        <div class="stat-cell" data-accent="green"><span class="stat-label">Divisions</span><span class="stat-num" id="stat-crews">0</span><span class="stat-foot">fleets</span></div>
+        <div class="stat-cell" data-accent="amber"><span class="stat-label">Dino species</span><span class="stat-num" id="stat-tiers">0</span><span class="stat-foot">in the genome catalog</span></div>
+        <div class="stat-cell" data-accent="violet"><span class="stat-label">Genome projects</span><span class="stat-num" id="stat-agents">0</span><span class="stat-foot">type: agent</span></div>
+        <div class="stat-cell" data-accent="amber"><span class="stat-label">Park budget</span><span class="stat-num" id="stat-spend">$0</span><span class="stat-foot" id="stat-spend-foot">ledger calls</span></div>
+        <div class="stat-cell" data-accent="grey"><span class="stat-label">Cache hit tokens</span><span class="stat-num" id="stat-cache">0</span><span class="stat-foot">cache_stats: empty</span></div>
+      </div>
+    </section>
+
+    <!-- 02 species -->
+    <section id="tiers">
+      <div class="sec-head">
+        <span class="sec-idx">02</span>
+        <h2 class="sec-title">Species distribution</h2>
+        <span class="sec-rule"></span>
+        <span class="sec-note">live staff counts by species</span>
+      </div>
+      <div class="panel">
+        <div class="tier-list" id="tier-list"></div>
+      </div>
+      <div class="sp-legend" id="sp-legend" aria-label="Species legend"></div>
+    </section>
+
+    <!-- 03 divisions -->
+    <section id="crews">
+      <div class="sec-head">
+        <span class="sec-idx">03</span>
+        <h2 class="sec-title">Divisions</h2>
+        <span class="sec-rule"></span>
+        <span class="sec-note">division heads + staff</span>
+      </div>
+      <div class="crew-grid" id="crew-grid"></div>
+    </section>
+
+    <!-- 04 console -->
+    <section id="console">
+      <div class="sec-head">
+        <span class="sec-idx">04</span>
+        <h2 class="sec-title">Park console</h2>
+        <span class="sec-rule"></span>
+        <span class="sec-note">read-only telemetry. type help.</span>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="term-title">park console <span class="ok">[ connected ]</span></span>
+          <span class="term-live">LIVE</span>
+        </div>
+        <div class="term-body" id="term-body" aria-live="polite"></div>
+        <form class="term-form" id="term-form" autocomplete="off">
+          <span class="term-prompt">park@nublar:~$</span>
+          <input class="term-input" id="term-input" type="text" placeholder="type a command, try: help" aria-label="Console command input" spellcheck="false">
+        </form>
+      </div>
+    </section>
+
+    <!-- 05 ledger -->
+    <section id="ledger">
+      <div class="sec-head">
+        <span class="sec-idx">05</span>
+        <h2 class="sec-title">Budget ledger</h2>
+        <span class="sec-rule"></span>
+        <span class="sec-note" id="ledger-note">recent calls</span>
+      </div>
+      <div class="panel">
+        <div class="chips" id="ledger-chips"></div>
+        <div class="ledger-scroll">
+          <table class="ledger">
+            <thead>
+              <tr>
+                <th>Last seen</th>
+                <th>Species</th>
+                <th>Specimen</th>
+                <th style="text-align:right">Calls</th>
+                <th style="text-align:right">DNA in</th>
+                <th style="text-align:right">DNA out</th>
+                <th style="text-align:right">Total cost</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-body"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="6">Total est. cost, all calls</td>
+                <td class="t-total" id="ledger-total">$0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 park map -->
+    <section id="diagrams">
+      <div class="sec-head">
+        <span class="sec-idx">06</span>
+        <h2 class="sec-title">Park map</h2>
+        <span class="sec-rule"></span>
+        <span class="sec-note">infrastructure + maps. click to enlarge.</span>
+      </div>
+      <div class="legend-grid">
+        <div class="legend-panel">
+          <div class="legend-title">Park infrastructure</div>
+          <div class="legend-row">
+            <span class="lg-chip"><b>Main Computer</b><i>=</i>ken_service</span>
+            <span class="lg-chip"><b>Weather Station</b><i>=</i>system-monitor</span>
+            <span class="lg-chip"><b>Park Closure Mode</b><i>=</i>game_mode_daemon</span>
+            <span class="lg-chip"><b>Ranger Jeep</b><i>=</i>cua-driver</span>
+            <span class="lg-chip"><b>ACU</b><i>=</i>approval-watcher<span class="lg-note">asset containment unit</span></span>
+            <span class="lg-chip"><b>Emergency Bunker</b><i>=</i>watchdog</span>
+            <span class="lg-chip"><b>Feeding Station</b><i>=</i>claude-max-api-proxy<span class="lg-note">feeds the Indominus</span></span>
+            <span class="lg-chip"><b>Breeding Facility</b><i>=</i>ollama</span>
+          </div>
+        </div>
+        <div class="legend-panel">
+          <div class="legend-title">Labs (shared services)</div>
+          <div class="legend-row">
+            <span class="lg-chip"><b>Genome Lab</b><i>=</i>llm.py<span class="lg-note">routes all DNA</span></span>
+            <span class="lg-chip"><b>DNA Bank</b><i>=</i>cache.py</span>
+            <span class="lg-chip"><b>Genome Templates</b><i>=</i>prompts.py</span>
+            <span class="lg-chip"><b>Park Budget</b><i>=</i>cost.py</span>
+            <span class="lg-chip"><b>Vet Clinic</b><i>=</i>supervisor.py</span>
+            <span class="lg-chip"><b>Containment Fences</b><i>=</i>breaker.py</span>
+            <span class="lg-chip"><b>Fossil Archive</b><i>=</i>brain_client.py</span>
+            <span class="lg-chip"><b>Warehouse</b><i>=</i>tool_cache.py</span>
+          </div>
+        </div>
+      </div>
+      <div class="diag-grid" id="diag-grid"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="foot-row">
+      <span class="foot-data">JURASSIC PARK monitor</span>
+      <span>live dashboard for Janak's AI bot fleet. all numbers read live from <span class="f-green">data.js</span>, none hardcoded.</span>
+      <span id="foot-stamp"></span>
+      <a href="process.html">pipeline doc</a>
+    </div>
+  </footer>
+
+</div>
+
+<!-- lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lb-close" id="lb-close" aria-label="Close image">ESC</button>
+  <img id="lb-img" src="" alt="">
+  <div class="lb-cap" id="lb-cap"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var D = window.FLEET_DATA || null;
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var BOTS = (D && D.bots) ? D.bots : [];
+  var FLEETS = (D && D.fleets) ? D.fleets : [];
+  var COST = (D && D.cost) ? D.cost : [];
+
+  /* species catalog: tier -> dino. counts are computed live, catalog is the park genome list. */
+  var SPECIES = [
+    { tier:"flash",      name:"Triceratops",     color:"#ffd166", model:"DeepSeek v4-flash", cost:"~$0.14/M", tag:"everyday workhorse" },
+    { tier:"local",      name:"Compsognathus",   color:"#3fb950", model:"qwen3:8b",          cost:"$0",        tag:"tiny scavenger, small tasks" },
+    { tier:"pro",        name:"Tyrannosaurus Rex", color:"#bc8cff", model:"DeepSeek v4-pro", cost:"~$0.43/M",  tag:"heavy work" },
+    { tier:"groq",       name:"Velociraptor",    color:"#f0883e", model:"llama-3.3-70b",     cost:"$0",        tag:"FAST" },
+    { tier:"openrouter", name:"Brachiosaurus",   color:"#39c5cf", model:"nemotron 120B",     cost:"$0",        tag:"massive reach" },
+    { tier:"nvidia",     name:"Dilophosaurus",   color:"#9ecb3c", model:"llama-3.1-8b",      cost:"$0",        tag:"quick, cheap" },
+    { tier:"free",       name:"Gallimimus",      color:"#f778ba", model:"Bluesminds 70b",    cost:"$0",        tag:"common free-roaming" },
+    { tier:"frontier",   name:"Indominus Rex",   color:"#ffd9a0", model:"Claude sonnet-5",   cost:"Pro sub",   tag:"flagship engineered hybrid" }
+  ];
+  var SPEC_BY_TIER = {};
+  SPECIES.forEach(function(s){ SPEC_BY_TIER[s.tier] = s; });
+  var NO_MODEL = { tier:"none", name:"no model", color:"#8b949e", model:"deterministic staff", cost:"$0", tag:"health checks, probes, PII scrub" };
+
+  var DIVISIONS = {
+    ops:      { name:"Park Operations",    head:"ops-boss",      color:"#00e5a0", boss:true  },
+    qa:       { name:"Security Division",  head:"qa-lead",       color:"#8b7cf6", boss:false },
+    research: { name:"Science Division",   head:"research-lead", color:"#ffd166", boss:false },
+    career:   { name:"Entertainment Division", head:"career-lead", color:"#ff6b6b", boss:false }
+  };
+  var DIV_COLOR = { ops:"#00e5a0", qa:"#8b7cf6", research:"#ffd166", career:"#ff6b6b" };
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+      .replace(/\u2014/g,"-").replace(/\u2013/g,"-");
+  }
+  function pad(s,n){ s = String(s); while(s.length < n){ s += " "; } return s; }
+  function fmtUsd(v){
+    if(!v) return "$0";
+    var s = v.toFixed(6).replace(/0+$/,"");
+    if(s.charAt(s.length-1) === ".") s += "0";
+    return "$" + s;
+  }
+  function fmtTs(ts){
+    var d = new Date(ts);
+    if(isNaN(d.getTime())) return String(ts).slice(0,16);
+    function p(n){ return (n < 10 ? "0" : "") + n; }
+    return (d.getMonth()+1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+  }
+  function fmtClock(){
+    var d = new Date();
+    function p(n){ return (n < 10 ? "0" : "") + n; }
+    return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()) + " UTC-" + (-d.getTimezoneOffset()/60);
+  }
+  function specName(tier){
+    var s = SPEC_BY_TIER[tier || "none"];
+    return s ? s.name : (tier || "no model");
+  }
+  function specColor(tier){
+    var s = SPEC_BY_TIER[tier];
+    return s ? s.color : "#8b949e";
+  }
+
+  /* ---------- clock ---------- */
+  var clockEl = $("clock");
+  if(clockEl){
+    clockEl.textContent = fmtClock();
+    setInterval(function(){ clockEl.textContent = fmtClock(); }, 1000);
+  }
+
+  /* ---------- computed stats ---------- */
+  var nBots = BOTS.length;
+  var nCrews = FLEETS.length;
+  var nAgents = BOTS.filter(function(b){ return b.type === "agent"; }).length;
+  var nStandbys = BOTS.filter(function(b){ return b.standby_for; }).length;
+  var nSpecies = SPECIES.length;
+  var botTiers = {};
+  BOTS.forEach(function(b){ var t = b.tier || "none"; botTiers[t] = (botTiers[t] || 0) + 1; });
+  var ledgerTiers = {};
+  COST.forEach(function(c){ var t = c.tier || "unknown"; ledgerTiers[t] = (ledgerTiers[t] || 0) + 1; });
+  var totalCost = 0, cacheHits = 0, peakRows = 0;
+  COST.forEach(function(c){
+    totalCost += (c.est_cost_usd || 0);
+    cacheHits += (c.cache_hit_tokens || 0);
+    if(c.peak) peakRows++;
+  });
+
+  /* ---------- lede subtitle ---------- */
+  var ledeStaff = $("lede-staff"), ledeCrews = $("lede-crews"), ledeSpecies = $("lede-species");
+  if(ledeStaff) ledeStaff.textContent = nBots;
+  if(ledeCrews) ledeCrews.textContent = nCrews;
+  if(ledeSpecies) ledeSpecies.textContent = nSpecies;
+
+  /* ---------- count-up stats ---------- */
+  var statDefs = [
+    { el:"stat-bots",      val:nBots,        dec:0, money:false },
+    { el:"stat-crews",     val:nCrews,       dec:0, money:false },
+    { el:"stat-tiers",     val:nSpecies,     dec:0, money:false },
+    { el:"stat-agents",    val:nAgents,      dec:0, money:false },
+    { el:"stat-spend",     val:totalCost,    dec:6, money:true  },
+    { el:"stat-cache",     val:cacheHits,    dec:0, money:false }
+  ];
+  var noteEl = $("readout-note");
+  if(noteEl) noteEl.textContent = nBots + " staff, " + nCrews + " divisions, " + COST.length + " ledger calls";
+  var spendFoot = $("stat-spend-foot");
+  if(spendFoot) spendFoot.textContent = COST.length + " ledger calls";
+
+  function runCountup(el, target, dec, money){
+    if(!el) return;
+    if(REDUCED){
+      el.textContent = money ? fmtUsd(target) : String(Math.round(target));
+      return;
+    }
+    var t0 = null, dur = 900;
+    function frame(ts){
+      if(t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      var ease = 1 - Math.pow(1 - p, 3);
+      var cur = target * ease;
+      el.textContent = money ? "$" + cur.toFixed(dec) : String(Math.round(cur));
+      if(p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  var io = null;
+  if("IntersectionObserver" in window && !REDUCED){
+    io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          var s = statDefs[en.target.dataset.idx];
+          if(s && !en.target.dataset.done){
+            en.target.dataset.done = "1";
+            runCountup($(s.el), s.val, s.dec, s.money);
+          }
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: .3 });
+  }
+  statDefs.forEach(function(s, i){
+    var cell = $(s.el) ? $(s.el).closest(".stat-cell") : null;
+    if(cell){
+      cell.dataset.idx = i;
+      if(io) io.observe(cell);
+      else runCountup($(s.el), s.val, s.dec, s.money);
+    }
+  });
+
+  /* ---------- species bars ---------- */
+  var tierListEl = $("tier-list");
+  if(tierListEl && BOTS.length){
+    var display = SPECIES.slice().sort(function(a,b){
+      var ba = botTiers[a.tier] || 0, bb = botTiers[b.tier] || 0;
+      return bb - ba;
+    });
+    var maxTier = 1;
+    display.forEach(function(s){ var bc = botTiers[s.tier] || 0; if(bc > maxTier) maxTier = bc; });
+    var html = "";
+    display.forEach(function(s){
+      var bc = botTiers[s.tier] || 0;
+      var lc = ledgerTiers[s.tier] || 0;
+      var pct = Math.max(2, Math.round(bc / maxTier * 100));
+      var note = s.model + " <span class=\"n-dim\">·</span> " + s.cost + " <span class=\"n-dim\">·</span> <span class=\"n-tag\">" + s.tag + "</span>";
+      if(bc === 0 && lc > 0) note += " <span class=\"n-dim\">· ledger only</span>";
+      else if(bc === 0) note += " <span class=\"n-dim\">· in development, 0 cloned</span>";
+      html += '<div class="tier-row">'
+            + '<span class="tier-name"><span class="tier-sq" style="background:' + s.color + '"></span>' + esc(s.name) + '<span class="t-tier">(' + esc(s.tier) + ')</span></span>'
+            + '<div class="tier-bar-wrap"><div class="tier-bar" data-w="' + pct + '" style="width:0;background:' + s.color + '"></div></div>'
+            + '<span class="tier-count">' + bc + ' <small>staff</small></span>'
+            + '<div class="tier-note">' + note + '</div>'
+            + '</div>';
+    });
+    var noneBc = botTiers["none"] || 0;
+    html += '<div class="tier-row">'
+          + '<span class="tier-name"><span class="tier-sq" style="background:' + NO_MODEL.color + '"></span>' + esc(NO_MODEL.name) + '<span class="t-tier">(none)</span></span>'
+          + '<div class="tier-bar-wrap"><div class="tier-bar" data-w="' + Math.max(2, Math.round(noneBc / maxTier * 100)) + '" style="width:0;background:' + NO_MODEL.color + '"></div></div>'
+          + '<span class="tier-count">' + noneBc + ' <small>staff</small></span>'
+          + '<div class="tier-note">' + NO_MODEL.model + ' <span class="n-dim">·</span> no DNA <span class="n-dim">·</span> <span class="n-tag">' + NO_MODEL.tag + '</span></div>'
+          + '</div>';
+    tierListEl.innerHTML = html;
+    var bars = tierListEl.querySelectorAll(".tier-bar");
+    var ioBars = null;
+    if("IntersectionObserver" in window && !REDUCED){
+      ioBars = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){
+            en.target.style.width = en.target.dataset.w + "%";
+            ioBars.unobserve(en.target);
+          }
+        });
+      }, { threshold: .4 });
+      bars.forEach(function(b){ ioBars.observe(b); });
+    } else {
+      bars.forEach(function(b){ b.style.width = b.dataset.w + "%"; });
+    }
+  }
+
+  /* ---------- species legend ---------- */
+  var spLegendEl = $("sp-legend");
+  if(spLegendEl){
+    var lg = SPECIES.slice().map(function(s){
+      return '<span><span class="tier-sq" style="background:' + s.color + '"></span><b>' + esc(s.name) + '</b><i>' + esc(s.tier) + '</i></span>';
+    });
+    lg.push('<span><span class="tier-sq" style="background:' + NO_MODEL.color + '"></span><b>' + esc(NO_MODEL.name) + '</b><i>none</i></span>');
+    spLegendEl.innerHTML = lg.join("");
+  }
+
+  /* ---------- division cards ---------- */
+  var crewGridEl = $("crew-grid");
+  if(crewGridEl && FLEETS.length){
+    var crewHtml = "";
+    FLEETS.forEach(function(f){
+      var color = DIV_COLOR[f.id] || "#7d8494";
+      var dv = DIVISIONS[f.id] || { name:f.name, head:f.coordinator, color:color, boss:false };
+      var members = BOTS.filter(function(b){ return b.fleet === f.id; }).map(function(b){ return b.id; });
+      var headId = dv.head || f.coordinator;
+      var standbyIds = {};
+      BOTS.forEach(function(b){ if(b.standby_for) standbyIds[b.id] = true; });
+      var chips = members.map(function(m){
+        var cls = standbyIds[m] ? "member-chip standby" : "member-chip";
+        var star = (m === headId) ? '<span class="m-star">★ </span>' : "";
+        return '<span class="' + cls + '">' + star + esc(m) + (standbyIds[m] ? " *" : "") + '</span>';
+      }).join("");
+      var headName = "";
+      BOTS.forEach(function(b){ if(b.id === headId) headName = b.name || ""; });
+      var headLabel = dv.boss ? "park manager" : "division head";
+      var headNote = dv.boss ? '<span class="boss-tag">supervises all divisions, can approve</span>' : "";
+      crewHtml += '<div class="crew-card" style="--crew:' + color + '">'
+                + '<div class="crew-top"><span class="crew-name">' + esc(dv.name) + '</span><span class="crew-id">' + esc(f.id) + '</span>'
+                + '<span class="crew-members-count">' + members.length + '</span></div>'
+                + '<div class="crew-coord">' + headLabel + ' <b><span class="star">★</span> ' + esc(headId) + '</b>' + (headName ? " / " + esc(headName) : "") + headNote + '</div>'
+                + '<div class="crew-members">' + chips + '</div>'
+                + '</div>';
+    });
+    crewGridEl.innerHTML = crewHtml;
+  }
+
+  /* ---------- console ---------- */
+  var termBody = $("term-body");
+  var termForm = $("term-form");
+  var termInput = $("term-input");
+  var typing = false;
+  var history = [];
+  var histIdx = -1;
+
+  function termLine(html, cls){
+    if(!termBody) return;
+    var d = document.createElement("div");
+    d.className = "t-line" + (cls ? " " + cls : "");
+    d.innerHTML = html;
+    termBody.appendChild(d);
+    termBody.scrollTop = termBody.scrollHeight;
+    return d;
+  }
+  function termRaw(text){
+    var d = document.createElement("div");
+    d.className = "t-line";
+    d.textContent = text;
+    termBody.appendChild(d);
+    termBody.scrollTop = termBody.scrollHeight;
+    return d;
+  }
+  function typeLines(lines, done){
+    if(!termBody){ if(done) done(); return; }
+    if(REDUCED){
+      lines.forEach(function(l){ termRaw(l); });
+      if(done) done();
+      return;
+    }
+    var i = 0;
+    function next(){
+      if(i >= lines.length){ if(done) done(); return; }
+      var text = lines[i++];
+      var d = document.createElement("div");
+      d.className = "t-line c-cursor";
+      termBody.appendChild(d);
+      var j = 0;
+      (function tick(){
+        if(j <= text.length){
+          d.textContent = text.slice(0, j);
+          termBody.scrollTop = termBody.scrollHeight;
+        }
+        j++;
+        if(j <= text.length) setTimeout(tick, 4 + Math.random() * 9);
+        else {
+          d.classList.remove("c-cursor");
+          next();
+        }
+      })();
+    }
+    next();
+  }
+  function runCommand(cmd){
+    var c = String(cmd || "").trim().toLowerCase();
+    var out = [];
+    if(c === "help"){
+      out.push('"park console" - read-only window into data.js. no sudo. no feeding the raptors. just telemetry.');
+      out.push("commands:");
+      out.push("  staff       roster: all bot ids + species, grouped by division");
+      out.push("  divisions   park structure: division heads + member counts");
+      out.push("  species     dino species census");
+      out.push("  budget      budget ledger: real calls, real numbers");
+      out.push("  status      park state snapshot");
+      out.push("  clear       wipe the screen");
+      out.push("  help        this list. you found it.");
+    } else if(c === "staff"){
+      out.push(nBots + " staff on roster, grouped by division:");
+      FLEETS.forEach(function(f){
+        var members = BOTS.filter(function(b){ return b.fleet === f.id; });
+        var dv = DIVISIONS[f.id] || { name:f.name, head:f.coordinator };
+        out.push("== " + f.id + " / " + dv.name + " (" + members.length + ") ==");
+        members.forEach(function(b){
+          var sp = specName(b.tier);
+          var star = (b.id === (dv.head || f.coordinator)) ? "  ★" : "";
+          out.push("  " + pad(b.id, 22) + pad(sp + " (" + (b.tier || "none") + ")", 26) + (b.standby_for ? " [standby]" : "") + (b.enabled === false ? " [disabled]" : "") + star);
+        });
+      });
+      out.push(nStandbys + " standby staff: they only clock in when the primary misses its shift.");
+    } else if(c === "divisions"){
+      out.push(nCrews + " divisions, " + FLEETS.filter(function(f){ return f.coordinator; }).length + " division heads, " + nBots + " seats.");
+      FLEETS.forEach(function(f){
+        var cnt = BOTS.filter(function(b){ return b.fleet === f.id; }).length;
+        var dv = DIVISIONS[f.id] || { head:f.coordinator };
+        var hd = (dv.boss ? "PARK MANAGER" : "head");
+        out.push("  " + pad(f.id, 12) + pad(hd + ": " + (dv.head || f.coordinator), 34) + cnt + " staff");
+      });
+      out.push("science is the biggest division. entertainment is the newest. park operations runs the whole island.");
+    } else if(c === "species"){
+      out.push("species census across " + nBots + " staff:");
+      var order = SPECIES.slice().sort(function(a,b){
+        var ba = botTiers[a.tier] || 0, bb = botTiers[b.tier] || 0;
+        return bb - ba;
+      });
+      order.forEach(function(s){
+        var bc = botTiers[s.tier] || 0;
+        var lc = ledgerTiers[s.tier] || 0;
+        var bar = new Array(Math.max(1, Math.round(bc / 17 * 20))).join("#");
+        var extra = (bc === 0 && lc > 0) ? " (ledger only)" : (bc === 0 ? " (in development)" : "");
+        out.push("  " + pad(s.name, 19) + pad(String(bc), 4) + bar + "  " + s.model + extra);
+      });
+      out.push("most of the park runs on Triceratops. the cheap seats are Compsognathus. Gallimimus and Dilophosaurus only roam the ledger.");
+    } else if(c === "budget"){
+      out.push("budget ledger: " + COST.length + " calls, " + fmtUsd(totalCost) + " total. cheapest park on record.");
+      COST.slice(-8).forEach(function(r){
+        out.push("  " + fmtTs(r.ts) + "  " + pad(specName(r.tier), 16) + pad(r.model || "-", 34) + pad(String(r.prompt_tokens || 0) + "+" + String(r.completion_tokens || 0), 12) + fmtUsd(r.est_cost_usd));
+      });
+      out.push("peak-window rows: " + peakRows + ". cache hit tokens: " + cacheHits + ". cache_stats is empty, so treat that as a rounding error.");
+    } else if(c === "status"){
+      out.push("staff: " + nBots + " registered, " + BOTS.filter(function(b){ return b.enabled !== false; }).length + " enabled");
+      out.push("divisions: " + nCrews + "  |  heads: " + FLEETS.filter(function(f){ return f.coordinator; }).length + "  |  standbys: " + nStandbys);
+      out.push("genome projects: " + nAgents + " (type: agent)");
+      out.push("last ledger call: " + (COST.length ? fmtTs(COST[COST.length-1].ts) : "none yet"));
+      out.push("total spend: " + fmtUsd(totalCost) + "  |  cache hit tokens: " + cacheHits + "  |  peak rows: " + peakRows);
+      out.push("infrastructure: ACU, ranger jeep, weather station all nominal.");
+      out.push("verdict: all paddocks secure. the T-Rex eats on pocket change.");
+    } else if(c === "clear"){
+      if(termBody) termBody.innerHTML = "";
+      return;
+    } else {
+      out.push("'" + esc(c) + "' is not a park command. the raptors do not understand it. type 'help'.");
+    }
+    typing = true;
+    if(termInput) termInput.disabled = true;
+    typeLines(out, function(){
+      typing = false;
+      if(termInput){ termInput.disabled = false; termInput.focus(); }
+    });
+  }
+
+  if(termForm && termInput){
+    termForm.addEventListener("submit", function(ev){
+      ev.preventDefault();
+      var v = termInput.value;
+      if(typing) return;
+      if(!v.trim()) return;
+      history.push(v);
+      histIdx = history.length;
+      termRaw("park@nublar:~$ " + v);
+      termInput.value = "";
+      runCommand(v);
+    });
+    termInput.addEventListener("keydown", function(ev){
+      if(ev.key === "ArrowUp"){
+        ev.preventDefault();
+        if(history.length){
+          histIdx = Math.max(0, histIdx - 1);
+          termInput.value = history[histIdx];
+        }
+      } else if(ev.key === "ArrowDown"){
+        ev.preventDefault();
+        histIdx = Math.min(history.length, histIdx + 1);
+        termInput.value = histIdx < history.length ? history[histIdx] : "";
+      }
+    });
+    if(!REDUCED){
+      termInput.addEventListener("focus", function(){
+        termInput.style.animation = "none";
+      });
+    }
+  }
+
+  /* boot lines */
+  if(termBody && termInput){
+    setTimeout(function(){
+      var boot = [
+        "park console " + (D ? "v1.0 - jurassic theme" : "v1.0 (no data.js found - static shell)"),
+        "connected to data.js: " + nBots + " staff, " + nCrews + " divisions, " + COST.length + " ledger rows",
+        "type 'help' to see what this thing can do."
+      ];
+      typing = true;
+      termInput.disabled = true;
+      typeLines(boot, function(){
+        typing = false;
+        termInput.disabled = false;
+        termInput.focus();
+      });
+    }, 350);
+  }
+
+  /* ---------- ledger table ---------- */
+  var ledgerBody = $("ledger-body");
+  var ledgerTotalEl = $("ledger-total");
+  var ledgerNoteEl = $("ledger-note");
+  var chipsEl = $("ledger-chips");
+  var activeTier = "all";
+
+  if(ledgerBody && COST.length){
+    var ledgerSpecies = [];
+    Object.keys(ledgerTiers).forEach(function(t){
+      if(SPEC_BY_TIER[t]) ledgerSpecies.push(SPEC_BY_TIER[t]);
+    });
+    ledgerSpecies.sort(function(a,b){
+      return (ledgerTiers[b.tier] || 0) - (ledgerTiers[a.tier] || 0);
+    });
+    if(chipsEl){
+      var chipHtml = '<button type="button" class="chip on" data-tier="all">all species</button>';
+      ledgerSpecies.forEach(function(s){
+        chipHtml += '<button type="button" class="chip" data-tier="' + esc(s.tier) + '">'
+                  + '<span class="c-sq" style="background:' + s.color + '"></span>'
+                  + esc(s.name) + '</button>';
+      });
+      chipsEl.innerHTML = chipHtml;
+      chipsEl.querySelectorAll(".chip").forEach(function(ch){
+        ch.addEventListener("click", function(){
+          chipsEl.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("on"); });
+          ch.classList.add("on");
+          activeTier = ch.dataset.tier;
+          renderLedger();
+        });
+      });
+    }
+    function renderLedger(){
+      if(!ledgerBody) return;
+      var rows = COST.slice();
+      if(activeTier !== "all") rows = rows.filter(function(r){ return (r.tier || "unknown") === activeTier; });
+      if(!rows.length){
+        ledgerBody.innerHTML = '<tr class="empty-row"><td colspan="7">no calls on this species yet</td></tr>';
+        if(ledgerNoteEl) ledgerNoteEl.textContent = "0 calls shown";
+        return;
+      }
+      /* group by species(tier) + specimen(model): one row per group, aggregates summed */
+      var groups = {};
+      rows.forEach(function(r){
+        var tier = r.tier || "unknown";
+        var model = r.model || "unknown";
+        var key = tier + "\u0001" + model;
+        var g = groups[key];
+        if(!g){
+          g = groups[key] = { tier:tier, model:model, calls:0, pin:0, pout:0, cost:0, last:r.ts };
+        }
+        g.calls++;
+        g.pin += (r.prompt_tokens || 0);
+        g.pout += (r.completion_tokens || 0);
+        g.cost += (r.est_cost_usd || 0);
+        if(String(r.ts) > String(g.last)) g.last = r.ts;
+      });
+      var list = Object.keys(groups).map(function(k){ return groups[k]; });
+      list.sort(function(a,b){ return String(b.last).localeCompare(String(a.last)); });
+      var html = "";
+      list.forEach(function(g){
+        var color = specColor(g.tier);
+        html += "<tr>"
+              + '<td class="t-ts">' + esc(fmtTs(g.last)) + "</td>"
+              + '<td><span class="t-tier"><span class="tier-sq" style="background:' + color + '"></span>' + esc(specName(g.tier)) + '</span></td>'
+              + '<td class="t-model" title="' + esc(g.model) + '">' + esc(g.model) + "</td>"
+              + '<td class="t-num">' + g.calls + "</td>"
+              + '<td class="t-num">' + g.pin + "</td>"
+              + '<td class="t-num">' + g.pout + "</td>"
+              + '<td class="t-cost' + (g.cost ? "" : " zero") + '">' + esc(fmtUsd(g.cost)) + "</td>"
+              + "</tr>";
+      });
+      ledgerBody.innerHTML = html;
+      if(ledgerNoteEl) ledgerNoteEl.textContent = list.length + " species/model groups, " + rows.length + " calls shown";
+    }
+    renderLedger();
+    if(ledgerTotalEl) ledgerTotalEl.textContent = fmtUsd(totalCost);
+  } else if(ledgerBody){
+    ledgerBody.innerHTML = '<tr class="empty-row"><td colspan="7">no cost ledger data in data.js</td></tr>';
+  }
+
+  /* ---------- park map + lightbox ---------- */
+  var DIAGS = [
+    { src:"images/fleet-p1-overview.png",        label:"park overview: perimeter + sectors" },
+    { src:"images/fleet-p2-teams.png",           label:"division enclosures" },
+    { src:"images/fleet-p3-fleet-tools.png",     label:"labs + infrastructure" },
+    { src:"images/fleet-p4-cheatsheet.png",      label:"species field guide" },
+    { src:"images/fleet-metaphor-cheatsheet.png",label:"legacy map: racing era (v1)" },
+    { src:"images/fleet-graph.png",              label:"park power grid" }
+  ];
+  var diagGridEl = $("diag-grid");
+  if(diagGridEl){
+    diagGridEl.innerHTML = DIAGS.map(function(d){
+      return '<a class="diag-thumb" href="' + esc(d.src) + '" data-src="' + esc(d.src) + '" data-label="' + esc(d.label) + '" aria-label="Open ' + esc(d.label) + '">'
+           + '<img loading="lazy" src="' + esc(d.src) + '" alt="' + esc(d.label) + '">'
+           + '<span class="diag-cap">' + esc(d.label) + "</span>"
+           + "</a>";
+    }).join("");
+  }
+  var lb = $("lightbox"), lbImg = $("lb-img"), lbCap = $("lb-cap"), lbClose = $("lb-close");
+  function openLb(src, label){
+    if(!lb || !lbImg) return;
+    lbImg.src = src;
+    if(lbCap) lbCap.textContent = label;
+    lb.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeLb(){
+    if(!lb) return;
+    lb.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  if(diagGridEl){
+    diagGridEl.addEventListener("click", function(ev){
+      var t = ev.target.closest(".diag-thumb");
+      if(!t) return;
+      ev.preventDefault();
+      openLb(t.dataset.src, t.dataset.label);
+    });
+  }
+  if(lbClose) lbClose.addEventListener("click", closeLb);
+  if(lb) lb.addEventListener("click", function(ev){ if(ev.target === lb) closeLb(); });
+  document.addEventListener("keydown", function(ev){
+    if(ev.key === "Escape") closeLb();
+  });
+
+  /* ---------- footer stamp ---------- */
+  var stamp = $("foot-stamp");
+  if(stamp){
+    stamp.textContent = "rendered " + new Date().toISOString().slice(0,16).replace("T"," ") + " UTC from window.FLEET_DATA";
+  }
+
+  /* ---------- data marker for verification ---------- */
+  document.body.setAttribute("data-fleet-ready", "1");
+  document.body.setAttribute("data-bots", String(nBots));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>JURASSIC PARK - Genome Research: How Species Were Sorted</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#07100a; --panel:#0a0a10; --panel2:#101018; --fg:#e8e8ec; --dim:#9a9aa5;
+          --green:#00e5a0; --violet:#8b7cf6; --amber:#ffd166; --red:#ff6b6b; --border:#1e1e28; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--fg); font-family:'Space Grotesk',system-ui,sans-serif; line-height:1.65; }
+  :focus-visible { outline:2px solid var(--amber); outline-offset:2px; border-radius:4px; }
+
+  /* topbar (mirrors index.html) */
+  .topbar { position:sticky; top:0; z-index:50; background:rgba(5,5,8,.96);
+            border-bottom:1px solid var(--border); }
+  .topbar::before { content:""; display:block; height:4px;
+            background:repeating-linear-gradient(45deg,#ffd166 0 8px,#050508 8px 16px); }
+  .topbar .wrap { max-width:1120px; margin:0 auto; padding:10px 24px;
+                  display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:10px; min-height:44px; }
+  .brand-mark { width:22px; height:22px; color:var(--amber); flex:none;
+                  filter:drop-shadow(0 0 6px rgba(245,166,35,.55)); }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+  .brand-name { font-family:'Bebas Neue','Unbounded',sans-serif; font-weight:400; font-size:22px;
+                letter-spacing:.14em; color:var(--fg); }
+  .brand-name em { font-style:normal; color:var(--amber); }
+  .brand-sub { font-family:'VT323',monospace; font-size:16px; color:var(--dim); letter-spacing:.02em; }
+  .topbar nav { display:flex; gap:4px; margin-left:auto; flex-wrap:wrap; }
+  .topbar nav a { color:var(--dim); font-size:13px; font-weight:600; letter-spacing:.06em;
+                  text-transform:uppercase; padding:12px 11px; min-height:44px;
+                  display:flex; align-items:center; border-radius:6px; text-decoration:none;
+                  transition:color .15s, background .15s; }
+  .topbar nav a:hover { color:var(--fg); background:rgba(255,255,255,.04); text-decoration:none; }
+  .topbar nav a.now { color:var(--amber); background:rgba(255,209,102,.08); }
+
+  /* page header */
+  header.page { max-width:900px; margin:0 auto; padding:48px 20px 6px; }
+  .kicker { font-size:11.5px; letter-spacing:.34em; text-transform:uppercase; color:var(--amber); }
+  header.page h1 { font-family:'Unbounded',sans-serif; font-weight:600;
+                   font-size:clamp(1.6rem,4.5vw,2.4rem); letter-spacing:.02em;
+                   margin-top:10px; line-height:1.15; color:var(--amber); }
+  header.page h1 .accent { color:var(--green); }
+  header.page p.sub { color:var(--dim); margin-top:12px; font-size:.95rem; max-width:720px; }
+
+  main { max-width:900px; margin:0 auto; padding:10px 20px 40px; }
+  h2 { color:var(--amber); margin:36px 0 14px; font-size:1.3rem; border-bottom:1px solid var(--border); padding-bottom:6px; }
+  p { color:var(--dim); margin:8px 0; }
+  b, .fg { color:var(--fg); }
+  table { width:100%; border-collapse:collapse; margin:14px 0; font-size:.9rem; }
+  th, td { border:1px solid var(--border); padding:9px 12px; text-align:left; }
+  th { background:var(--panel); color:var(--fg); }
+  .rule { background:var(--panel); border-left:3px solid var(--amber); border-radius:6px;
+          padding:14px 18px; margin:16px 0; font-size:1.02rem; color:var(--dim); }
+  .rule b { color:var(--amber); }
+  .chip { display:inline-block; background:var(--panel); border:1px solid var(--border); border-radius:14px;
+          padding:3px 12px; font-size:.8rem; margin:3px; color:var(--fg); }
+  .c-local { border-color:#3fb950; color:#3fb950; }
+  .c-flash { border-color:#ffd166; color:#ffd166; }
+  .c-pro   { border-color:#bc8cff; color:#bc8cff; }
+  .c-frontier { border-color:#ffd9a0; color:#ffd9a0; }
+  .c-groq  { border-color:#f0883e; color:#f0883e; }
+  .c-openrouter { border-color:#39c5cf; color:#39c5cf; }
+  .c-nvidia { border-color:#9ecb3c; color:#9ecb3c; }
+  .c-free  { border-color:#f778ba; color:#f778ba; }
+  .steps { counter-reset:step; list-style:none; margin:14px 0; }
+  .steps li { counter-increment:step; margin:10px 0; padding-left:44px; position:relative; color:var(--dim); }
+  .steps li::before { content:counter(step); position:absolute; left:0; top:0; width:30px; height:30px;
+          border-radius:50%; background:var(--green); color:#000; display:flex; align-items:center;
+          justify-content:center; font-weight:bold; font-size:.9rem; }
+
+  /* footer */
+  footer { max-width:900px; margin:0 auto; padding:22px 20px 40px; border-top:1px solid var(--border); }
+  footer .foot-row { display:flex; flex-wrap:wrap; gap:10px 24px; align-items:center;
+                     font-family:'VT323',monospace; font-size:16px; color:var(--dim); }
+  footer .foot-row .f-green { color:var(--amber); }
+  footer .foot-row a { color:var(--dim); border-bottom:1px solid rgba(255,255,255,.13); text-decoration:none; }
+  footer .foot-row a:hover { color:var(--amber); text-decoration:none; }
+  footer .foot-data { display:flex; align-items:center; gap:8px; }
+  footer .foot-data::before { content:""; width:7px; height:7px; border-radius:50%;
+                              background:var(--amber); box-shadow:0 0 8px rgba(255,209,102,.8); }
+
+  @media (max-width:720px) {
+    header.page { padding-top:26px; }
+    .topbar nav { order:3; width:100%; overflow-x:auto; padding-bottom:2px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V7M18 21V7M3 7h18M5 11h14M7 15h10M6 21h12"/></svg>
+      <span class="brand-name">JURASSIC <em>PARK</em></span>
+      <span class="brand-sub">genome research</span>
+    </div>
+    <nav aria-label="Pages">
+      <a href="index.html">Dashboard</a>
+      <a href="teams.html">Staff</a>
+      <a href="analytics.html">Budget</a>
+      <a class="now" href="process.html">Process</a>
+      <a href="runbook.html">Runbook</a>
+    </nav>
+  </div>
+</div>
+
+<header class="page">
+  <p class="kicker">Jurassic World Evolution 3 · Genome research</p>
+  <h1>GENOME RESEARCH<span class="accent">.</span></h1>
+  <p class="sub">How the 8 dinosaur species were classified and sequenced for the park</p>
+</header>
+
+<main>
+
+<div class="rule"><b>THE HYBRID RULE:</b> small species for cheap/mechanical work, Triceratops
+for default quality, T-Rex for deep reasoning - and every dino falls back to a smaller one on
+failure. Zero-credit local species first.</div>
+
+<h2>1. Classification by task kind</h2>
+<p>Every request gets a <b>task kind</b>; the kind routes to a species. This is the core sort.</p>
+<table>
+  <tr><th>Task kind</th><th>Sorted to</th><th>Species</th><th>Why</th></tr>
+  <tr><td>summarize · extract · template · recipe · classify · travel · draft</td><td>LOCAL</td><td>Compsognathus</td><td>Mechanical, template-shaped - a tiny local genome is enough, $0</td></tr>
+  <tr><td>(everything else - default)</td><td>FLASH</td><td>Triceratops</td><td>Default quality work, ~$0.14/M, reliable</td></tr>
+  <tr><td>analysis · reasoning · debate · financial</td><td>PRO</td><td>Tyrannosaurus Rex</td><td>Deep reasoning needs the heaviest genome, ~$0.43/M</td></tr>
+  <tr><td>deep-analysis · hard-reasoning · complex-reasoning · frontier</td><td>FRONTIER</td><td>Indominus Rex</td><td>Flagship engineered hybrid via Pro subscription (in-app Claude Code limit ~50% higher than documented)</td></tr>
+</table>
+<p>Unknown kinds default to <b class="fg">Triceratops</b> (quality over cost). The routing lives in
+<b class="fg">agents/_shared/llm.py → tier_of(task_kind)</b>.</p>
+
+<h2>2. Free-roaming species: the cloud fallbacks</h2>
+<p>When a billed species fails (rate-limit, overload, connection error), the call cascades down
+through the <b>free-roaming species</b> before landing on the breeding facility (local). Each was
+probe-verified before release into the park:</p>
+<table>
+  <tr><th>Species</th><th>Provider / model</th><th>Verified how</th></tr>
+  <tr><td>Gallimimus</td><td>Bluesminds - llama-3.1-70b</td><td>Probe call 200; 600 req/day cap</td></tr>
+  <tr><td>Brachiosaurus</td><td>OpenRouter - nemotron-3-super-120b :free</td><td>Probe verified working (120B MoE, $0)</td></tr>
+  <tr><td>Velociraptor</td><td>Groq - llama-3.3-70b</td><td>Fastest; fixed a Cloudflare 403/1010 UA-block to make it work</td></tr>
+  <tr><td>Dilophosaurus</td><td>NVIDIA NIM - llama-3.1-8b ★</td><td>Key tested live; 8b always warm (~1s); 70b exists but cold-starts 4-10 min</td></tr>
+</table>
+<p class="fg" style="color:var(--dim)">Full fallback order:
+<span class="chip c-pro">T-Rex</span> → <span class="chip c-flash">Triceratops</span> →
+<span class="chip c-openrouter">Brachiosaurus</span> → <span class="chip c-groq">Velociraptor</span> →
+<span class="chip c-nvidia">Dilophosaurus</span> → <span class="chip c-free">Gallimimus</span> →
+<span class="chip c-local">Compsognathus</span>. A T-Rex call that fails still answers - smaller, never errors.</p>
+
+<h2>3. The cheap-first cascade</h2>
+<p>Not every call needs the species its kind suggests. The park runs a <b>cascade</b>:
+start with the smallest species (local/free), and <b>escalate only on a structured failure signal</b>:</p>
+<ol class="steps">
+  <li>Route the task kind to its species (above).</li>
+  <li>Try the smallest species first - Compsognathus or a free-roamer.</li>
+  <li>Escalate ONLY if: empty output, a refusal ("I cannot..."), or a validator rejects the answer.</li>
+  <li>Repeat up the chain until a good answer comes back.</li>
+</ol>
+<p>Result: easy intents cost <b>$0</b>; hard ones still get the heavy genome. No waste.</p>
+
+<h2>4. Quality guardrails on free species</h2>
+<ul style="color:var(--dim); margin-left:20px">
+  <li><b class="fg">Vet Clinic</b> (supervisor.py) re-checks free-species output for error echoes,
+      refusals, and API-key leaks before it's trusted - escalates to a stronger species once if needed.</li>
+  <li><b class="fg">Containment Fences</b> (breaker.py) skip species that are tripped open - a down
+      provider can't eat timeouts from 30 staff in parallel.</li>
+  <li><b class="fg">PII never leaves the park.</b> The PII guard is deterministic regex (no LLM at all);
+      anything PII-adjacent stays on the local species.</li>
+</ul>
+
+<h2>5. DNA bank & caching - why $0 is real</h2>
+<table>
+  <tr><th>Layer</th><th>Mechanism</th><th>Effect</th></tr>
+  <tr><td>L1 primary samples</td><td>Disk cache on identical requests</td><td>Repeated calls: 0 credits</td></tr>
+  <tr><td>L2 genetic matching</td><td>MiniLM embeddings, cosine ≥0.93</td><td>Near-identical questions: 0 credits</td></tr>
+  <tr><td>L3 deep genome prefix</td><td>DeepSeek auto prompt cache (stable species prefix + dynamic tail)</td><td>~68% prefix hit on second call, 256-token floor</td></tr>
+  <tr><td>Local sequencing</td><td>sentence-transformers MiniLM, ollama nomic-embed-text</td><td>RAG/embeddings never billed</td></tr>
+</table>
+<p class="fg">The DNA bank runs at <b>$0.000030/week</b>. Billed species are avoided during DeepSeek
+peak hours (UTC 01:00-04:00 & 06:00-10:00); free species and local are allowed anytime.</p>
+
+<h2>6. Why these 8 species (the research method)</h2>
+<ol class="steps">
+  <li><b>Rejected by genome quality, not fame.</b> Providers/tools vetted by code, live probes, and
+      error behavior - not popularity ("stars can be manipulated").</li>
+  <li><b>Probe-verified before release.</b> Every free species got a real API call before joining the
+      park (200 + live completion), including fixing Groq's Cloudflare UA block.</li>
+  <li><b>Smallest genome that clears the bar.</b> For each task kind, the minimum species that produces
+      usable output wins - local first, free next, billed only when needed.</li>
+  <li><b>Replaced when a better genome appears.</b> The park swaps species as better free options
+      emerge (e.g. NVIDIA NIM added 2026-08-14 as a warm 8b fallback).</li>
+  <li><b>Everything fails safely.</b> Containment fences, vet checks, and the breeding facility as a
+      last resort - no single provider outage ever shuts the park.</li>
+</ol>
+
+</main>
+<footer>
+  <div class="foot-row">
+    <span class="foot-data">JURASSIC PARK monitor</span>
+    <span>derived from <span class="f-green">ROUTING.md</span> + agents/_shared/llm.py · all numbers read live from data.js</span>
+    <a href="index.html">dashboard</a>
+    <a href="teams.html">staff</a>
+    <a href="analytics.html">budget</a>
+    <a href="runbook.html">runbook</a>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JURASSIC PARK - Park Staff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#07100a; --panel:#0a0a10; --panel2:#101018; --fg:#e8e8ec; --dim:#9a9aa5;
+    --green:#00e5a0; --violet:#8b7cf6; --amber:#ffd166; --red:#ff6b6b; --border:rgba(255,255,255,.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--fg); font-family:'Space Grotesk',system-ui,sans-serif; line-height:1.6; }
+
+  /* topbar: sticky, caution-stripe accent (mirrors index.html) */
+  .topbar { position:sticky; top:0; z-index:50; background:rgba(5,5,8,.92);
+          backdrop-filter:blur(6px); border-bottom:1px solid var(--border); }
+  .topbar::before { content:""; display:block; height:4px;
+          background:repeating-linear-gradient(45deg,#ffd166 0 8px,#050508 8px 16px); }
+  .topbar .wrap { max-width:1180px; margin:0 auto; padding:10px 20px;
+          display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:10px; min-height:44px; }
+  .brand-mark { width:22px; height:22px; color:var(--amber); flex:none;
+          filter:drop-shadow(0 0 6px rgba(245,166,35,.55)); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  .brand-name { font-family:'Bebas Neue','Unbounded',sans-serif; font-weight:400; font-size:22px;
+          letter-spacing:.14em; color:var(--fg); }
+  .brand-name em { font-style:normal; color:var(--amber); }
+  .brand-sub { font-family:'VT323',monospace; font-size:16px; color:var(--dim); letter-spacing:.02em; }
+  .topbar nav { display:flex; gap:4px; margin-left:auto; flex-wrap:wrap; }
+  .topbar nav a { color:var(--dim); font-size:13px; font-weight:600; letter-spacing:.06em;
+          text-transform:uppercase; padding:12px 11px; min-height:44px; display:flex; align-items:center;
+          border-radius:6px; transition:color .15s, background .15s; text-decoration:none; }
+  .topbar nav a:hover { color:var(--amber); background:rgba(255,209,102,.06); }
+  .topbar nav a:focus-visible { outline-offset:-2px; }
+  .topbar nav a.active { color:var(--amber); background:rgba(255,209,102,.1); }
+
+  /* page header: park gate */
+  header.page { padding:34px 20px 18px; text-align:center; border-bottom:1px solid var(--border); position:relative; }
+  header.page::after { content:""; display:block; width:64px; height:3px; background:var(--amber); margin:18px auto 0; border-radius:2px; }
+  header.page h1 { font-family:'Unbounded',sans-serif; font-size:1.8rem; color:var(--amber); letter-spacing:1px; }
+  header.page .hdrnum { font-family:'VT323',monospace; font-size:1.9rem; color:var(--green); margin:0 4px; }
+  header.page p { color:var(--dim); margin-top:10px; font-size:.95rem; }
+  header.page p b { color:var(--green); font-weight:700; }
+  .isla { font-family:'VT323',monospace; font-size:1.3rem; color:var(--dim); margin-top:6px; letter-spacing:2px; }
+  .isla b { color:var(--amber); font-weight:400; }
+  main { max-width:1180px; margin:0 auto; padding:10px 20px 40px; }
+
+  /* explore surface: search + filters */
+  .search { position:sticky; top:var(--tbh,70px); background:var(--bg); padding:14px 0 10px; z-index:5; }
+  .search input { width:100%; background:var(--panel); border:1px solid var(--border); border-radius:10px;
+          padding:13px 18px; color:var(--fg); font-family:'Space Grotesk',sans-serif; font-size:1rem; min-height:48px; }
+  .search input:focus { outline:none; border-color:var(--amber); box-shadow:0 0 0 2px #ffd16622; }
+  .search input::placeholder { color:#5c5c66; }
+  .countline { display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;
+          padding:6px 2px 2px; color:var(--dim); font-size:.85rem; }
+  .countline b { color:var(--amber); font-weight:700; }
+  .clearf { background:none; border:1px solid var(--border); color:var(--amber); font-family:'Space Grotesk',sans-serif;
+          font-size:.8rem; padding:11px 16px; border-radius:16px; cursor:pointer; transition:border-color .15s; min-height:44px; }
+  .clearf:hover { border-color:var(--amber); }
+  .clearf.hidden { visibility:hidden; }
+  .filters { display:flex; flex-direction:column; gap:10px; padding:10px 0 6px; }
+  .fgroup { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .flabel { font-family:'Unbounded',sans-serif; font-size:.62rem; letter-spacing:1.5px; color:var(--dim);
+          min-width:44px; text-transform:uppercase; }
+  .chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); background:var(--panel);
+          color:var(--dim); border-radius:20px; padding:9px 15px; font-family:'Space Grotesk',sans-serif;
+          font-size:.85rem; cursor:pointer; transition:border-color .15s, color .15s, background .15s; min-height:44px; }
+  .chip:hover { color:var(--fg); border-color:var(--amber); }
+  .chip .dot { width:9px; height:9px; border-radius:50%; flex:none; }
+  .chip .n { font-family:'VT323',monospace; font-size:1.15rem; line-height:1; color:var(--dim); }
+  .chip .sn { font-weight:500; }
+  .chip .st { font-family:'VT323',monospace; font-size:1rem; line-height:1; opacity:.85; padding-right:2px; }
+  .chip.active { color:var(--fg); border-color:currentColor; background:var(--panel2); }
+  .chip.active .n { color:currentColor; }
+  .chip.active .st { opacity:1; }
+
+  /* division sections */
+  section.div { margin-top:28px; }
+  .divhd { border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:16px;
+          border-left:3px solid var(--dc,var(--amber)); padding-left:14px; }
+  .divhd h2 { font-family:'Unbounded',sans-serif; font-size:1.12rem; color:var(--fg); letter-spacing:.3px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .divhd .dnum { font-family:'VT323',monospace; font-size:1.4rem; color:var(--dc,var(--amber)); }
+  .divhd .cmeta { color:var(--dim); font-size:.82rem; margin-top:4px; }
+  .divhd .head { font-family:'VT323',monospace; font-size:1.25rem; color:var(--dim); margin-top:4px; display:inline-block; }
+  .divhd .head .star { color:var(--amber); margin-right:6px; }
+  .divhd .head .ht { color:var(--amber); margin-right:5px; }
+  .divhd .head b { color:var(--fg); font-weight:400; }
+  .divhd .notes { width:100%; color:var(--dim); font-size:.85rem; margin-top:6px; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); gap:12px; }
+  .card { text-align:left; background:var(--panel); border:1px solid var(--border); border-radius:12px;
+          padding:16px 16px 14px; cursor:pointer; transition:border-color .15s, transform .15s, background .15s;
+          font-family:'Space Grotesk',sans-serif; }
+  .card:hover { border-color:var(--amber); transform:translateY(-2px); }
+  .card:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
+  .card.head { border-color:#ffd16644; background:#121209; }
+  .card.head:hover { border-color:var(--amber); }
+  .card .ctop { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:10px; }
+  .card .ctype { font-family:'VT323',monospace; font-size:1.1rem; color:var(--dim); text-transform:uppercase;
+          letter-spacing:.5px; padding-top:3px; }
+  .card .cname { font-family:'Unbounded',sans-serif; font-size:.95rem; color:var(--fg); line-height:1.35;
+          padding-right:4px; }
+  .card .cname .star { color:var(--amber); margin-left:5px; font-size:.85em; }
+  .card .cid { font-family:'VT323',monospace; font-size:1.2rem; color:var(--violet); margin-top:3px; }
+  .card .cmeta { display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-top:10px; color:var(--dim);
+          font-size:.8rem; }
+  .card .cmeta .sep { color:#3a3a44; }
+  .card .sched { font-family:'VT323',monospace; font-size:1.15rem; color:var(--dim); }
+
+  .tag { display:inline-flex; font-family:'Space Grotesk',sans-serif; font-size:.68rem; font-weight:700;
+          letter-spacing:.6px; text-transform:uppercase; padding:2px 9px; border-radius:9px; border:1px solid;
+          white-space:nowrap; }
+  .species { flex-direction:column; align-items:flex-end; gap:0; line-height:1.12; padding:4px 10px 5px; color:var(--tc);
+          border-color:var(--tc); background:transparent; }
+  .species .dn { font-weight:700; letter-spacing:.5px; }
+  .species .dt { font-family:'VT323',monospace; font-size:1.05rem; text-transform:none; letter-spacing:.4px; opacity:.85; }
+  .flag { color:var(--amber); border-color:var(--amber); }
+  .flag-standby { color:var(--dim); border-color:#3a3a44; }
+  .tag.plain { color:var(--dim); border-color:var(--border); }
+
+  .empty { display:none; text-align:center; padding:70px 20px; color:var(--dim); }
+  .empty.show { display:block; }
+  .empty .big { font-family:'VT323',monospace; font-size:2rem; color:var(--violet); }
+  .empty p { margin-top:8px; font-size:.9rem; }
+
+  /* detail modal */
+  #modal { position:fixed; inset:0; background:rgba(3,3,6,.86); display:none; align-items:center; justify-content:center;
+          z-index:50; padding:20px; }
+  #modal.open { display:flex; }
+  #panel { background:var(--panel); border:1px solid var(--border); border-radius:16px; max-width:640px; width:100%;
+          max-height:88vh; overflow-y:auto; padding:26px 26px 22px; animation:panelIn .18s ease-out; }
+  @keyframes panelIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  #panel .phead { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+  #panel h3 { font-family:'Unbounded',sans-serif; font-size:1.25rem; color:var(--fg); line-height:1.3; }
+  #panel .phead .star { color:var(--amber); }
+  #panel .pid { font-family:'VT323',monospace; font-size:1.4rem; color:var(--violet); margin-top:2px; }
+  #panel .ptags { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  #panel .species { font-size:.78rem; padding:5px 12px 6px; }
+  .close { background:none; border:1px solid var(--border); color:var(--dim); border-radius:50%; width:44px; height:44px;
+          font-size:1.3rem; cursor:pointer; flex:none; transition:color .15s, border-color .15s; }
+  .close:hover { color:var(--red); border-color:var(--red); }
+  .pnote { border-left:3px solid var(--amber); background:var(--panel2); border-radius:0 10px 10px 0;
+          padding:12px 16px; margin:16px 0; color:var(--dim); font-size:.9rem; }
+  .pnote b { color:var(--fg); font-weight:700; }
+  .pflags { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .pflags .flag { padding:6px 12px; font-size:.72rem; min-height:32px; }
+  .pflags .ok { color:var(--green); border-color:var(--green); }
+  .pflags .warn { color:var(--amber); border-color:var(--amber); }
+  .pflags .off { color:var(--dim); border-color:#3a3a44; }
+  .pfield { display:grid; grid-template-columns:118px 1fr; gap:8px 16px; padding:8px 0; border-top:1px solid #14141c;
+          font-size:.88rem; }
+  .pfield .k { color:var(--dim); font-family:'Unbounded',sans-serif; font-size:.6rem; letter-spacing:1.2px;
+          text-transform:uppercase; padding-top:3px; }
+  .pfield .v { color:var(--fg); word-break:break-word; }
+  .pfield .v.mono { font-family:'VT323',monospace; font-size:1.3rem; line-height:1.2; }
+  .caps { display:flex; gap:7px; flex-wrap:wrap; }
+  .cap { background:var(--panel2); border:1px solid var(--border); color:var(--amber); border-radius:7px;
+          padding:3px 10px; font-size:.76rem; }
+  footer { border-top:1px solid var(--border); margin-top:30px; padding:22px 0 34px; }
+  .foot-row { display:flex; flex-wrap:wrap; gap:10px 24px; align-items:center; justify-content:center;
+          font-family:'VT323',monospace; font-size:16px; color:var(--dim); text-align:center; }
+  .foot-row a { color:var(--amber); text-decoration:none; }
+  .foot-row a:hover { text-decoration:underline; }
+
+  @media (max-width:600px) {
+    header.page h1 { font-size:1.35rem; }
+    #panel { padding:20px 16px 16px; }
+    .pfield { grid-template-columns:1fr; gap:2px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition:none !important; animation:none !important; }
+    .card:hover { transform:none; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V7M18 21V7M3 7h18M5 11h14M7 15h10M6 21h12"/></svg>
+      <span class="brand-name">JURASSIC <em>PARK</em></span>
+      <span class="brand-sub">park staff / data.js</span>
+    </div>
+    <nav aria-label="Pages">
+      <a href="index.html">Dashboard</a>
+      <a class="active" href="teams.html">Staff</a>
+      <a href="analytics.html">Budget</a>
+      <a href="process.html">Process</a>
+      <a href="runbook.html">Runbook</a>
+    </nav>
+  </div>
+</header>
+<header class="page">
+  <h1>PARK STAFF <span class="hdrnum" id="hdrCount">0</span> KEEPERS</h1>
+  <p>Every keeper on the island, searchable by division and species. Click a keeper for the full record.</p>
+  <div class="isla">ISLA NUBLAR - RAPTOR RIDGE / BAYSIDE / SCIENCE SECTOR / AMPHITHEATER</div>
+</header>
+<main>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search keepers by name, id, species, notes..." autocomplete="off" aria-label="Search keepers">
+  </div>
+  <div class="countline">
+    <span id="count" aria-live="polite">Loading park roster...</span>
+    <button class="clearf hidden" id="clearf" type="button">Clear filters</button>
+  </div>
+  <div class="filters">
+    <div class="fgroup" id="divFilters" aria-label="Filter by division"></div>
+    <div class="fgroup" id="speciesFilters" aria-label="Filter by species"></div>
+  </div>
+  <div id="sections"></div>
+  <div class="empty" id="empty">
+    <div class="big">NO KEEPERS FOUND</div>
+    <p>Nothing matches the current search and filters. Try another term or clear the filters.</p>
+  </div>
+</main>
+<footer>
+  <div class="foot-row">
+    <span>JURASSIC PARK monitor</span>
+    <span>Every keeper reads live from <span style="color:var(--green);">data.js</span>, none hardcoded.</span>
+    <span><a href="index.html">Dashboard</a> · <a href="analytics.html">Budget</a> · <a href="process.html">Process</a> · <a href="runbook.html">Runbook</a></span>
+  </div>
+</footer>
+
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="panel">
+    <div class="phead">
+      <div>
+        <h3 id="modalTitle"></h3>
+        <div class="pid" id="modalId"></div>
+        <div class="ptags" id="modalTags"></div>
+      </div>
+      <button class="close" id="closeBtn" type="button" aria-label="Close keeper details">&times;</button>
+    </div>
+    <div class="pflags" id="modalFlags"></div>
+    <div class="pnote" id="modalNote"></div>
+    <div id="modalFields"></div>
+    <div class="pfield" style="border-bottom:1px solid #14141c;"><span class="k">Capabilities</span><span class="v"><span class="caps" id="modalCaps"></span></span></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.FLEET_DATA;
+
+  /* guard: fleet data must exist */
+  if (!D || !Array.isArray(D.bots) || !D.bots.length || !Array.isArray(D.fleets) || !D.fleets.length) {
+    var countEl0 = document.getElementById("count");
+    if (countEl0) countEl0.textContent = "Park roster missing - could not load keepers.";
+    return;
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var root = $("sections");
+  var emptyEl = $("empty");
+  var countEl = $("count");
+  var clearBtn = $("clearf");
+  var qEl = $("q");
+  if (!root || !emptyEl || !countEl || !clearBtn || !qEl) return;
+
+  /* keep the sticky search below the sticky topbar (stripe + wrap height) */
+  var tbEl = document.querySelector(".topbar");
+  function setTopbarGap() {
+    if (tbEl) document.documentElement.style.setProperty("--tbh", tbEl.offsetHeight + "px");
+  }
+  window.addEventListener("resize", setTopbarGap);
+  setTopbarGap();
+
+  /* species = model tier, dino names (JWE3 roster) */
+  var SPECIES = {
+    local:      { color: "#3fb950", name: "Compsognathus" },
+    free:       { color: "#f778ba", name: "Gallimimus" },
+    openrouter: { color: "#39c5cf", name: "Brachiosaurus" },
+    groq:       { color: "#f0883e", name: "Velociraptor" },
+    nvidia:     { color: "#9ecb3c", name: "Dilophosaurus" },
+    flash:      { color: "#ffd166", name: "Triceratops" },
+    pro:        { color: "#bc8cff", name: "Tyrannosaurus Rex" },
+    frontier:   { color: "#ffd9a0", name: "Indominus Rex" },
+    none:       { color: "#8b949e", name: "no dino" }
+  };
+  var SPECIES_ORDER = ["local", "flash", "pro", "frontier", "groq", "openrouter", "nvidia", "free", "none"];
+
+  /* divisions = fleets */
+  var DIVISIONS = {
+    ops:      { label: "Park Operations",       headTitle: "Park Manager",   color: "#00e5a0" },
+    qa:       { label: "Security Division",     headTitle: "Division Head",  color: "#8b7cf6" },
+    research: { label: "Science Division",      headTitle: "Division Head",  color: "#ffd166" },
+    career:   { label: "Entertainment Division", headTitle: "Division Head", color: "#ff6b6b" }
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/\u2014/g, "-").replace(/\u2013/g, "-");
+  }
+
+  function divMeta(fleet) {
+    var d = DIVISIONS[fleet.id];
+    return d ? d : { label: fleet.name, headTitle: "Division Head", color: "#8b7cf6" };
+  }
+
+  function coordBotOf(fleet) {
+    var i;
+    for (i = 0; i < D.bots.length; i++) if (D.bots[i].id === fleet.coordinator) return D.bots[i];
+    return null;
+  }
+
+  function fleetById(id) {
+    var i;
+    for (i = 0; i < D.fleets.length; i++) if (D.fleets[i].id === id) return D.fleets[i];
+    return null;
+  }
+
+  function speciesOf(bot) {
+    return SPECIES[bot.tier || "none"] || SPECIES.none;
+  }
+
+  function tierText(bot) {
+    return bot.tier && bot.tier !== "none" ? bot.tier : "no model";
+  }
+
+  function fmtSchedule(s) {
+    if (!s) return "unscheduled";
+    var p = String(s).split(":");
+    if (p[0] === "weekly" && p.length === 4) {
+      var days = { mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat", sun: "Sun" };
+      return "weekly " + (days[p[1]] || p[1]) + " " + p[2] + ":" + p[3];
+    }
+    if (p[0] === "daily" && p.length === 3) return "daily " + p[1] + ":" + p[2];
+    return String(s);
+  }
+
+  function fmtCost(n) {
+    var v = Number(n) || 0;
+    if (v === 0) return "$0";
+    return "$" + v.toLocaleString("en-US");
+  }
+
+  function speciesBadge(bot, extra) {
+    var sp = speciesOf(bot);
+    return '<span class="tag species' + (extra || "") + '" style="--tc:' + sp.color + '">' +
+      '<span class="dn">' + esc(sp.name) + '</span>' +
+      '<span class="dt">' + esc(tierText(bot)) + '</span></span>';
+  }
+
+  function speciesChip(tier, count, active) {
+    var sp = SPECIES[tier] || SPECIES.none;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip" + (active ? " active" : "");
+    b.dataset.species = tier;
+    b.setAttribute("aria-pressed", active ? "true" : "false");
+    b.innerHTML = '<span class="dot" style="background:' + sp.color + '"></span>' +
+      '<span class="sn">' + esc(sp.name) + '</span>' +
+      '<span class="st" style="color:' + sp.color + '">' + esc(tier === "none" ? "none" : tier) + '</span>' +
+      '<span class="n">' + count + '</span>';
+    return b;
+  }
+
+  function divisionChip(fleet, count, active) {
+    var d = divMeta(fleet);
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip" + (active ? " active" : "");
+    b.dataset.div = fleet.id;
+    b.setAttribute("aria-pressed", active ? "true" : "false");
+    b.innerHTML = '<span class="dot" style="background:' + d.color + '"></span>' + esc(d.label) +
+      ' <span class="n">' + count + '</span>';
+    return b;
+  }
+
+  var state = { q: "", divs: {}, species: {} };
+
+  function matches(bot) {
+    var sp = speciesOf(bot);
+    if (state.q) {
+      var q = state.q.toLowerCase();
+      var f = fleetById(bot.fleet);
+      var dm = f ? divMeta(f).label : bot.fleet;
+      var hay = [bot.name, bot.id, bot.type, bot.tier || "", sp.name, bot.model || "",
+        bot.schedule || "", bot.runner || "", bot.notes || "",
+        (bot.capabilities || []).join(" "), dm].join(" ").toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    if (Object.keys(state.divs).length && !state.divs[bot.fleet]) return false;
+    if (Object.keys(state.species).length && !state.species[bot.tier || "none"]) return false;
+    return true;
+  }
+
+  function botCard(bot, fleet) {
+    var dm = divMeta(fleet);
+    var isHead = fleet && fleet.coordinator === bot.id;
+    var isStandby = !!bot.standby_for;
+    var card = document.createElement("button");
+    card.type = "button";
+    card.className = "card" + (isHead ? " head" : "");
+    card.dataset.id = bot.id;
+    card.setAttribute("aria-label", "Open details for " + bot.name);
+    var tags = "";
+    if (isHead) tags += '<span class="flag">' + esc(dm.headTitle) + '</span> ';
+    if (isStandby) tags += '<span class="flag-standby">Standby</span> ';
+    card.innerHTML =
+      '<div class="ctop"><span class="ctype">' + esc(bot.type) + '</span>' +
+      speciesBadge(bot) + '</div>' +
+      '<div class="cname">' + esc(bot.name) + (isHead ? '<span class="star" aria-hidden="true">&#9733;</span>' : '') + '</div>' +
+      '<div class="cid">' + esc(bot.id) + '</div>' +
+      '<div class="cmeta">' + (tags ? '<span>' + tags + '</span><span class="sep">/</span>' : '') +
+      '<span>' + esc(dm.label) + '</span><span class="sep">/</span>' +
+      '<span class="sched">' + esc(fmtSchedule(bot.schedule)) + '</span></div>';
+    card.addEventListener("click", function () { openModal(bot, fleet); });
+    return card;
+  }
+
+  function render() {
+    var counts = { divs: {}, species: {} };
+    var i, bot;
+    for (i = 0; i < D.bots.length; i++) {
+      bot = D.bots[i];
+      counts.divs[bot.fleet] = (counts.divs[bot.fleet] || 0) + 1;
+      var t = bot.tier || "none";
+      counts.species[t] = (counts.species[t] || 0) + 1;
+    }
+
+    var df = $("divFilters");
+    var sf = $("speciesFilters");
+    if (df) {
+      df.innerHTML = "";
+      var j;
+      for (j = 0; j < D.fleets.length; j++) {
+        var fl = D.fleets[j];
+        if (counts.divs[fl.id]) df.appendChild(divisionChip(fl, counts.divs[fl.id], !!state.divs[fl.id]));
+      }
+    }
+    if (sf) {
+      sf.innerHTML = "";
+      var k;
+      for (k = 0; k < SPECIES_ORDER.length; k++) {
+        var tt = SPECIES_ORDER[k];
+        if (counts.species[tt]) sf.appendChild(speciesChip(tt, counts.species[tt], !!state.species[tt]));
+      }
+    }
+
+    var anyFilters = Object.keys(state.divs).length > 0 || Object.keys(state.species).length > 0;
+    clearBtn.classList.toggle("hidden", !anyFilters && !state.q);
+
+    root.innerHTML = "";
+    var shown = 0;
+    var secCount = 0;
+    for (j = 0; j < D.fleets.length; j++) {
+      var fleet = D.fleets[j];
+      var members = [];
+      for (i = 0; i < D.bots.length; i++) if (D.bots[i].fleet === fleet.id) members.push(D.bots[i]);
+      if (!members.length) continue;
+      var visible = members.filter(matches);
+      if (!visible.length) continue;
+      secCount++;
+      shown += visible.length;
+      var dm = divMeta(fleet);
+      var cb = coordBotOf(fleet);
+      var headLine = cb ? '<span class="head"><span class="star" aria-hidden="true">&#9733;</span>' +
+        '<span class="ht">' + esc(dm.headTitle) + ':</span><b>' + esc(cb.name) + '</b></span>' : '';
+      var sec = document.createElement("section");
+      sec.className = "div";
+      sec.style.setProperty("--dc", dm.color);
+      sec.setAttribute("aria-label", dm.label);
+      sec.innerHTML =
+        '<div class="divhd"><h2><span class="dnum">' + String(secCount).padStart(2, "0") + '</span>' +
+        esc(dm.label) + '</h2>' +
+        '<div class="cmeta">' + visible.length + ' of ' + members.length + ' keepers on duty</div>' +
+        headLine +
+        '<div class="notes">' + esc(fleet.notes || "") + '</div></div>';
+      var grid = document.createElement("div");
+      grid.className = "grid";
+      var m;
+      for (m = 0; m < visible.length; m++) grid.appendChild(botCard(visible[m], fleet));
+      sec.appendChild(grid);
+      root.appendChild(sec);
+    }
+
+    var hc = $("hdrCount");
+    if (hc) hc.textContent = D.bots.length;
+    countEl.innerHTML = "Showing <b>" + shown + "</b> of <b>" + D.bots.length + "</b> keepers" +
+      (anyFilters ? " after filtering" : "");
+    emptyEl.classList.toggle("show", shown === 0);
+    document.body.setAttribute("data-fleet-ready", "1");
+    document.body.setAttribute("data-bots", String(D.bots.length));
+  }
+
+  /* detail modal */
+  var modal = $("modal");
+  var lastFocus = null;
+
+  function flagRow(label, ok, text) {
+    var s = document.createElement("span");
+    s.className = "flag " + (ok ? "ok" : "off");
+    s.textContent = label + ": " + text;
+    return s;
+  }
+
+  function openModal(bot, fleet) {
+    lastFocus = document.activeElement;
+    var dm = divMeta(fleet);
+    var sp = speciesOf(bot);
+    var isHead = fleet && fleet.coordinator === bot.id;
+
+    var tEl = $("modalTitle");
+    if (tEl) tEl.innerHTML = esc(bot.name) +
+      (isHead ? ' <span class="star" aria-hidden="true">&#9733;</span>' : '');
+    var iEl = $("modalId");
+    if (iEl) iEl.textContent = bot.id;
+
+    var tags = speciesBadge(bot) +
+      '<span class="tag plain">' + esc(bot.type) + '</span>' +
+      '<span class="tag" style="color:' + dm.color + ';border-color:' + dm.color + ';">' + esc(dm.label) + '</span>';
+    if (isHead) tags += '<span class="flag">' + esc(dm.headTitle) + '</span>';
+    if (bot.standby_for) tags += '<span class="flag-standby">Standby for ' + esc(bot.standby_for) + '</span>';
+    var tagsEl = $("modalTags");
+    if (tagsEl) tagsEl.innerHTML = tags;
+
+    var flags = $("modalFlags");
+    if (flags) {
+      flags.innerHTML = "";
+      if (bot.enabled === false) flags.appendChild(flagRow("Status", false, "disabled"));
+      if (bot.needs_approval) flags.appendChild(flagRow("Approval", false, "needs approval"));
+      if (bot.can_approve) {
+        var s = document.createElement("span");
+        s.className = "flag ok";
+        s.textContent = "Can approve" + ((bot.approval_levels && bot.approval_levels.length) ? " (" + bot.approval_levels.join(", ") + ")" : "");
+        flags.appendChild(s);
+      }
+      if (bot.time_sensitive) flags.appendChild(flagRow("Timing", true, "time sensitive"));
+    }
+
+    var noteEl = $("modalNote");
+    if (noteEl) noteEl.innerHTML = "<b>Notes:</b> " + esc(bot.notes || "No notes on file.");
+
+    var caps = $("modalCaps");
+    if (caps) {
+      caps.innerHTML = "";
+      var c;
+      var capList = bot.capabilities || [];
+      if (capList.length) {
+        for (c = 0; c < capList.length; c++) {
+          var ch = document.createElement("span");
+          ch.className = "cap";
+          ch.textContent = capList[c];
+          caps.appendChild(ch);
+        }
+      } else {
+        var none = document.createElement("span");
+        none.className = "cap";
+        none.textContent = "none listed";
+        caps.appendChild(none);
+      }
+    }
+
+    var fields = $("modalFields");
+    if (fields) {
+      fields.innerHTML = "";
+      function field(k, v, mono) {
+        var row = document.createElement("div");
+        row.className = "pfield";
+        var kk = document.createElement("span");
+        kk.className = "k";
+        kk.textContent = k;
+        var vv = document.createElement("span");
+        vv.className = "v" + (mono ? " mono" : "");
+        vv.textContent = v;
+        row.appendChild(kk);
+        row.appendChild(vv);
+        fields.appendChild(row);
+      }
+      var cb = coordBotOf(fleet);
+      field("Division", dm.label + (cb ? " - " + dm.headTitle + ": " + cb.name : ""));
+      field("Species", sp.name + " (" + tierText(bot) + ")", true);
+      field("Type", bot.type);
+      field("Schedule", fmtSchedule(bot.schedule), true);
+      if (bot.runner) field("Runner", bot.runner, true);
+      if (bot.target) field("Target", bot.target, true);
+      field("Model", bot.model || "no model", true);
+      if (bot.depth) field("Depth", bot.depth);
+      if (typeof bot.subagents === "number") field("Subagents", String(bot.subagents));
+      if (bot.sources && bot.sources.length) field("Sources", bot.sources.join(", "), true);
+      if (bot.output) field("Output", bot.output, true);
+      if (bot.agent_dir) field("Agent", bot.agent_dir, true);
+      if (bot.agent_args) field("Args", bot.agent_args, true);
+      if (bot.budget) {
+        field("Budget", "max " + bot.budget.max_runs_per_day + " runs / day - " +
+          fmtCost(bot.budget.max_cost_est) + " est max", true);
+      }
+      if (bot.enabled === false) field("Status", "disabled");
+      if (bot.needs_approval) field("Approval", "requires approval before running");
+    }
+
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+    var closeBtn = $("closeBtn");
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeModal() {
+    if (!modal.classList.contains("open")) return;
+    modal.classList.remove("open");
+    document.body.style.overflow = "";
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function onKey(ev) {
+    if (!modal.classList.contains("open")) return;
+    if (ev.key === "Escape") { closeModal(); return; }
+    if (ev.key === "Tab") {
+      var focusables = modal.querySelectorAll("button, a, input, [tabindex]");
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    }
+  }
+
+  /* events */
+  qEl.addEventListener("input", function () {
+    state.q = qEl.value.trim();
+    render();
+  });
+  var df = $("divFilters");
+  if (df) df.addEventListener("click", function (ev) {
+    var chip = ev.target.closest(".chip");
+    if (!chip || !chip.dataset.div) return;
+    if (state.divs[chip.dataset.div]) delete state.divs[chip.dataset.div];
+    else state.divs[chip.dataset.div] = true;
+    render();
+  });
+  var sf = $("speciesFilters");
+  if (sf) sf.addEventListener("click", function (ev) {
+    var chip = ev.target.closest(".chip");
+    if (!chip || !chip.dataset.species) return;
+    if (state.species[chip.dataset.species]) delete state.species[chip.dataset.species];
+    else state.species[chip.dataset.species] = true;
+    render();
+  });
+  clearBtn.addEventListener("click", function () {
+    state.divs = {};
+    state.species = {};
+    state.q = "";
+    qEl.value = "";
+    render();
+    qEl.focus();
+  });
+  var closeBtn = $("closeBtn");
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (modal) {
+    modal.addEventListener("click", function (ev) { if (ev.target === modal) closeModal(); });
+  }
+  document.addEventListener("keydown", onKey);
+
+  render();
+})();
+</script>
+</body>
+</html>
