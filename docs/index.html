@@ -67,7 +67,7 @@ a:hover{text-decoration:underline}
   padding-top:10px;padding-bottom:10px;
 }
 .brand{display:flex;align-items:center;gap:10px;min-height:44px}
-.brand-mark{width:22px;height:22px;color:var(--amber);flex:none;filter:drop-shadow(0 0 6px rgba(245,166,35,.55))}
+.brand-mark{width:28px;height:28px;color:var(--amber);flex:none;filter:drop-shadow(0 0 6px rgba(245,166,35,.55))}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .brand-name{
   font-family:'Bebas Neue',var(--disp);font-weight:400;font-size:24px;letter-spacing:.14em;
@@ -419,7 +419,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px}
   <header class="topbar">
     <div class="wrap">
       <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V7M18 21V7M3 7h18M5 11h14M7 15h10M6 21h12"/></svg>
+        <svg class="brand-mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5 C9 5 7 6 7 8 C7 10 8 11 10 11 C12 11 13 9 13 7 C13 6 13 5 12 5 Z"/><circle cx="10" cy="8" r="0.9"/><path d="M7 8 L5 10 L7 12 M12 11 L12 13 M10 11 L9 13 M12 13 C14 16 18 17 22 13 M13 14 L16 19 M15 14 L18 19 M17 14 L19 17 M22 13 L28 7 L30 6 M16 15 L17 17 L16 19 M17 15 L17 20 L15 24 M17 20 L19 24 M22 13 L23 18 L21 24 M23 18 L25 23"/></svg>
         <span class="brand-name">JURASSIC <em>PARK</em></span>
         <span class="brand-sub">live AI fleet monitor / data.js</span>
       </div>
@@ -922,6 +922,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px}
       out.push("  budget      budget ledger: real calls, real numbers");
       out.push("  status      park state snapshot");
       out.push("  clear       wipe the screen");
+      out.push("  nedry       do not feed the raptors");
       out.push("  help        this list. you found it.");
     } else if(c === "staff"){
       out.push(nBots + " staff on roster, grouped by division:");
@@ -973,6 +974,19 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px}
       out.push("total spend: " + fmtUsd(totalCost) + "  |  cache hit tokens: " + cacheHits + "  |  peak rows: " + peakRows);
       out.push("infrastructure: ACU, ranger jeep, weather station all nominal.");
       out.push("verdict: all paddocks secure. the T-Rex eats on pocket change.");
+    } else if(c === "nedry"){
+      out.push("Dennis Nedry: 'Uh uh uh... you didn't say the magic word.'");
+      out.push("He is in the park. He left the computer system wide open.");
+      out.push("Jurassic Park fence status: " + (Math.random() < 0.5 ? "ALL FENCES SECURE" : "FENCE 4 DOWN - rangers dispatched"));
+      out.push("Secret: the raptor paddock power was NOT restored. pray they hold.");
+      out.push("...also he stole the embryos. watch the embroy freezer. - park management");
+    } else if(c === "spared no expense"){
+      out.push("SPARE NO EXPENSE.");
+      out.push("Dr. Hammond is pleased with your budget discipline: " + fmtUsd(totalCost) + " total.");
+      out.push("'We have made a fortune with this park, and I intend to continue.'");
+    } else if(c === "life finds a way"){
+      out.push("'Life finds a way.' - Dr. Ian Malcolm");
+      out.push("so does the fleet: " + nBots + " staff, all still running, even after the fences fail.");
     } else if(c === "clear"){
       if(termBody) termBody.innerHTML = "";
       return;
