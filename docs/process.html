@@ -255,11 +255,25 @@ peak hours (UTC 01:00-04:00 & 06:00-10:00); free species and local are allowed a
   <div class="foot-row">
     <span class="foot-data">JURASSIC PARK monitor</span>
     <span>derived from <span class="f-green">ROUTING.md</span> + agents/_shared/llm.py · all numbers read live from data.js</span>
+    <span id="qfoot" style="color:var(--dim)"></span>
     <a href="index.html">dashboard</a>
     <a href="teams.html">staff</a>
     <a href="analytics.html">budget</a>
     <a href="runbook.html">runbook</a>
   </div>
 </footer>
+<script>
+(function(){
+  var qs = [
+    '"Life finds a way." - Dr. Ian Malcolm',
+    '"Spared no expense." - John Hammond',
+    '"Clever girl." - Robert Muldoon',
+    '"It spits venom." - Dennis Nedry',
+    '"Hold on to your butts." - Ray Arnold'
+  ];
+  var el = document.getElementById("qfoot");
+  if (el) { el.textContent = qs[Math.floor(Math.random()*qs.length)]; }
+})();
+</script>
 </body>
 </html>

@@ -322,15 +322,15 @@ svg { max-width: 100%; }
 
   /* species = model tier, dino names (JWE3 roster) */
   var SPECIES = {
-    local:      { color: "#3fb950", name: "Compsognathus" },
-    free:       { color: "#f778ba", name: "Gallimimus" },
-    openrouter: { color: "#39c5cf", name: "Brachiosaurus" },
-    groq:       { color: "#f0883e", name: "Velociraptor" },
-    nvidia:     { color: "#9ecb3c", name: "Dilophosaurus" },
-    flash:      { color: "#ffd166", name: "Triceratops" },
-    pro:        { color: "#bc8cff", name: "Tyrannosaurus Rex" },
-    frontier:   { color: "#ffd9a0", name: "Indominus Rex" },
-    none:       { color: "#8b949e", name: "no dino" }
+    local:      { color: "#3fb950", name: "Compsognathus", fact: "the size of a chicken, twice as cocky, hunts in packs." },
+    free:       { color: "#f778ba", name: "Gallimimus", fact: "the ostrich of the park: fast, flightless, panics in herds." },
+    openrouter: { color: "#39c5cf", name: "Brachiosaurus", fact: "tallest in the park, 800 lbs of leaves a day. a lot of salad." },
+    groq:       { color: "#f0883e", name: "Velociraptor", fact: "feathers, a sickle claw, and a grudge. 'clever girl.'" },
+    nvidia:     { color: "#9ecb3c", name: "Dilophosaurus", fact: "the spitter. venom blinds you in seconds. ask Nedry." },
+    flash:      { color: "#ffd166", name: "Triceratops", fact: "could take on a T-Rex with those horns. sometimes won." },
+    pro:        { color: "#bc8cff", name: "Tyrannosaurus Rex", fact: "8,000 lbs bite force. the tour jeep never stood a chance." },
+    frontier:   { color: "#ffd9a0", name: "Indominus Rex", fact: "engineered with cuttlefish DNA. changes color. we do not talk about it." },
+    none:       { color: "#8b949e", name: "no dino", fact: "deterministic staff: no dino, no drama, no feeding required." }
   };
   var SPECIES_ORDER = ["local", "flash", "pro", "frontier", "groq", "openrouter", "nvidia", "free", "none"];
 
@@ -585,7 +585,8 @@ svg { max-width: 100%; }
     }
 
     var noteEl = $("modalNote");
-    if (noteEl) noteEl.innerHTML = "<b>Notes:</b> " + esc(bot.notes || "No notes on file.");
+    if (noteEl) noteEl.innerHTML = "<b>Notes:</b> " + esc(bot.notes || "No notes on file.") +
+      '<div style="margin-top:8px;color:var(--amber)">' + esc(sp.fact || "") + "</div>";
 
     var caps = $("modalCaps");
     if (caps) {

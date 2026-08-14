@@ -1,5 +1,5 @@
 window.FLEET_DATA = {
- "generated_at": "2026-08-14T15:42:00",
+ "generated_at": "2026-08-14T16:06:36",
  "fleets": [
   {
    "id": "ops",
@@ -420,7 +420,7 @@ window.FLEET_DATA = {
    "fleet": "career",
    "schedule": "manual",
    "agent_dir": "09-resume-parser-agent",
-   "agent_args": "--resume \"<local-path>"",
+   "agent_args": "--resume \"<local-path>\"",
    "model": "qwen3:8b",
    "tier": "local",
    "env": {

@@ -32,9 +32,10 @@ PRIVATE_REPOS = [
 ]
 def scrub(text):
     import re
-    text = re.sub(r"E:[\\/]Local[^\"\s,)]*", "<local-path>", text)
-    text = re.sub(r"C:[\\/]Users[^\"\s,)]*", "<user-home>", text)
-    text = re.sub(r"/[ec]/[Ll]ocal[^\"\s,)]*", "<local-path>", text)
+    # stop at quotes AND backslash (escaped-quote boundary) so JSON stays valid
+    text = re.sub(r"E:[\\/]Local[^\"\\\s,)]*", "<local-path>", text)
+    text = re.sub(r"C:[\\/]Users[^\"\\\s,)]*", "<user-home>", text)
+    text = re.sub(r"/[ec]/[Ll]ocal[^\"\\\s,)]*", "<local-path>", text)
     for name, generic in PRIVATE_REPOS:
         text = text.replace(name, generic)
     return text

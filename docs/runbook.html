@@ -173,12 +173,27 @@ svg { max-width: 100%; }
   <div class="foot-row">
     <span class="foot-data">JURASSIC PARK monitor</span>
     <span>derived from <span class="f-green">brain vault meta/known-issues-and-fixes.md</span> · all numbers read live from data.js</span>
+    <span id="qfoot" style="color:var(--dim)"></span>
     <a href="index.html">dashboard</a>
     <a href="teams.html">staff</a>
     <a href="analytics.html">budget</a>
     <a href="process.html">process</a>
   </div>
 </footer>
+
+<script>
+(function(){
+  var qs = [
+    '"Life finds a way." - Dr. Ian Malcolm',
+    '"Spared no expense." - John Hammond',
+    '"Clever girl." - Robert Muldoon',
+    '"It spits venom." - Dennis Nedry',
+    '"Hold on to your butts." - Ray Arnold'
+  ];
+  var el = document.getElementById("qfoot");
+  if (el) { el.textContent = qs[Math.floor(Math.random()*qs.length)]; }
+})();
+</script>
 
 <script>
 const ISSUES = [

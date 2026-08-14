@@ -109,6 +109,12 @@ a:hover{text-decoration:underline}
   border-radius:8px;padding:13px 18px;margin:0 0 26px;
 }
 .about b{color:var(--amber);font-weight:400}
+.jpquote{
+  font-family:var(--mono);font-size:16px;color:var(--violet);text-align:center;
+  padding:10px 16px;margin:0 0 26px;min-height:42px;
+  background:var(--bg2);border:1px dashed rgba(139,124,246,.35);border-radius:8px;
+}
+.jpquote .q-tag{color:var(--dim);font-size:14px}
 
 /* ---------- section scaffolding ---------- */
 main{padding:28px 0 10px}
@@ -244,15 +250,26 @@ section{margin-bottom:46px;scroll-margin-top:80px}
 .term-live{margin-left:auto;font-family:var(--mono);font-size:16px;color:var(--green);display:flex;align-items:center;gap:6px}
 .term-live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s ease-in-out infinite}
 .term-body{
-  height:440px;overflow-y:auto;padding:14px 16px;
+  padding:14px 16px;
   font-family:var(--mono);font-size:18px;line-height:1.4;color:#c8ffe9;
-  position:relative;
+  position:relative;max-height:none;overflow:visible;
 }
-.term-body::after{ /* scanlines */
-  content:"";position:sticky;bottom:0;left:0;right:0;height:100%;pointer-events:none;
-  background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px);
-  opacity:.35;display:block;height:100%;
+.term-body::after{ /* subtle scanlines, decorative only */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.10) 0 1px, transparent 1px 3px);
+  opacity:.22;
 }
+.term-quick{
+  display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;
+  border-bottom:1px solid var(--line);background:var(--panel2);
+}
+.term-quick button{
+  font-family:var(--mono);font-size:15px;color:var(--amber);
+  background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.28);
+  border-radius:6px;padding:8px 12px;min-height:40px;cursor:pointer;
+  transition:color .15s,background .15s,border-color .15s;
+}
+.term-quick button:hover{color:#050508;background:var(--amber);border-color:var(--amber)}
 .t-line{white-space:pre-wrap;word-break:break-word;min-height:1.4em}
 .t-line .c-green{color:var(--green)}
 .t-line .c-violet{color:var(--violet)}
@@ -387,6 +404,8 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px}
 .foot-row a:hover{color:var(--amber);text-decoration:none}
 .foot-data{display:flex;align-items:center;gap:8px}
 .foot-data::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px rgba(255,209,102,.8)}
+#raptor-watch{font-family:var(--mono);font-size:15px;color:var(--red);display:inline-flex;align-items:center;gap:6px}
+#raptor-watch::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.2s ease-in-out infinite}
 
 /* ---------- responsive ---------- */
 @media(min-width:640px){
@@ -404,7 +423,6 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px}
 @media(max-width:640px){
   .topbar nav{order:3;width:100%;overflow-x:auto;padding-bottom:2px}
   .tier-row{grid-template-columns:150px 1fr 82px;gap:10px}
-  .term-body{height:400px}
   .clock{display:none}
 }
 @media (prefers-reduced-motion: reduce){
@@ -504,6 +522,8 @@ svg { max-width: 100%; }
       Budget for the money (almost none), Incident Reports for what broke and how it was fixed.
     </div>
 
+    <div class="jpquote" id="jpquote" aria-live="polite"></div>
+
     <!-- 01 stats -->
     <section id="overview">
       <div class="sec-head">
@@ -560,6 +580,17 @@ svg { max-width: 100%; }
           <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="term-title">park console <span class="ok">[ connected ]</span></span>
           <span class="term-live">LIVE</span>
+        </div>
+        <div class="term-quick" id="term-quick" aria-label="Quick park commands">
+          <button type="button" data-cmd="help">help</button>
+          <button type="button" data-cmd="staff">staff</button>
+          <button type="button" data-cmd="species">species</button>
+          <button type="button" data-cmd="tour">tour</button>
+          <button type="button" data-cmd="t-rex">t-rex</button>
+          <button type="button" data-cmd="raptors">raptors</button>
+          <button type="button" data-cmd="feed">feed</button>
+          <button type="button" data-cmd="power">power</button>
+          <button type="button" data-cmd="nedry">nedry</button>
         </div>
         <div class="term-body" id="term-body" aria-live="polite"></div>
         <form class="term-form" id="term-form" autocomplete="off">
@@ -650,6 +681,7 @@ svg { max-width: 100%; }
       <span class="foot-data">JURASSIC PARK monitor</span>
       <span>live dashboard for Janak's AI bot fleet. all numbers read live from <span class="f-green">data.js</span>, none hardcoded.</span>
       <span id="foot-stamp"></span>
+      <span id="raptor-watch" aria-live="polite"></span>
       <a href="process.html">pipeline doc</a>
     </div>
   </footer>
@@ -734,6 +766,31 @@ svg { max-width: 100%; }
   if(clockEl){
     clockEl.textContent = fmtClock();
     setInterval(function(){ clockEl.textContent = fmtClock(); }, 1000);
+  }
+
+  /* ---------- jp quote rotator ---------- */
+  var JP_QUOTES = [
+    {q:"Welcome to Jurassic Park.", who:"John Hammond"},
+    {q:"Life finds a way.", who:"Ian Malcolm"},
+    {q:"Clever girl.", who:"Robert Muldoon"},
+    {q:"Hold on to your butts.", who:"Ray Arnold"},
+    {q:"Spared no expense.", who:"John Hammond"},
+    {q:"God creates dinosaurs. God destroys dinosaurs. Man creates dinosaurs.", who:"Ian Malcolm"},
+    {q:"We have a T-Rex.", who:"John Hammond"},
+    {q:"It spits. It spits venom.", who:"Dennis Nedry"},
+    {q:"Dinosaurs and man, two species separated by 65 million years of evolution.", who:"Alan Grant"},
+    {q:"The power is restored. A dinosaur is loose.", who:"Ellie Sattler"}
+  ];
+  var jpqEl = $("jpquote");
+  if(jpqEl){
+    var qi = Math.floor(Math.random() * JP_QUOTES.length);
+    function showQuote(){
+      var item = JP_QUOTES[qi % JP_QUOTES.length];
+      jpqEl.innerHTML = '"' + esc(item.q) + '" <span class="q-tag">- ' + esc(item.who) + '</span>';
+      qi++;
+    }
+    showQuote();
+    setInterval(showQuote, 9000);
   }
 
   /* ---------- computed stats ---------- */
@@ -832,7 +889,7 @@ svg { max-width: 100%; }
       var note = s.model + " <span class=\"n-dim\">·</span> " + s.cost + " <span class=\"n-dim\">·</span> <span class=\"n-tag\">" + s.tag + "</span>";
       if(bc === 0 && lc > 0) note += " <span class=\"n-dim\">· ledger only</span>";
       else if(bc === 0) note += " <span class=\"n-dim\">· in development, 0 cloned</span>";
-      html += '<div class="tier-row">'
+      html += '<div class="tier-row" data-tier="' + esc(s.tier) + '" tabindex="0" role="button" aria-label="Dino fact: ' + esc(s.name) + '">'
             + '<span class="tier-name"><span class="tier-sq" style="background:' + s.color + '"></span>' + esc(s.name) + '<span class="t-tier">(' + esc(s.tier) + ')</span></span>'
             + '<div class="tier-bar-wrap"><div class="tier-bar" data-w="' + pct + '" style="width:0;background:' + s.color + '"></div></div>'
             + '<span class="tier-count">' + bc + ' <small>staff</small></span>'
@@ -862,6 +919,33 @@ svg { max-width: 100%; }
     } else {
       bars.forEach(function(b){ b.style.width = b.dataset.w + "%"; });
     }
+    /* click a species row -> dino fact lands in the park console */
+    var DINO_FACTS = {
+      "Triceratops": "a Triceratops could take on a T-Rex with those horns. sometimes they won.",
+      "Compsognathus": "compies are the size of a chicken and just as cocky. they hunt in packs. duck.",
+      "Tyrannosaurus Rex": "T-Rex bite force: 8,000 lbs. the tour jeep never stood a chance.",
+      "Indominus Rex": "the hybrid was engineered with cuttlefish DNA. it could change color. we do not talk about it.",
+      "Velociraptor": "raptors have feathers, a sickle claw, and a grudge. 'clever girl.'",
+      "Brachiosaurus": "the tallest dino in the park. eats 800 lbs of leaves a day. that is a lot of salad.",
+      "Dilophosaurus": "the spitter's venom blinds you in seconds. Nedry learned that the hard way.",
+      "Gallimimus": "the ostrich of the park: fast, flightless, and panics in herds.",
+      "no model": "deterministic staff: no dino, no drama, no feeding required."
+    };
+    tierListEl.addEventListener("click", function(ev){
+      var row = ev.target.closest(".tier-row");
+      if(!row || typing) return;
+      var sp = SPEC_BY_TIER[row.dataset.tier];
+      var nm = sp ? sp.name : "no model";
+      if(!termBody) return;
+      termRaw("park@nublar:~$ fact " + (sp ? sp.tier : "none"));
+      typeLines([DINO_FACTS[nm] || DINO_FACTS["Triceratops"]]);
+    });
+    tierListEl.addEventListener("keydown", function(ev){
+      if(ev.key === "Enter" || ev.key === " "){
+        ev.preventDefault();
+        ev.target.click();
+      }
+    });
   }
 
   /* ---------- species legend ---------- */
@@ -911,6 +995,32 @@ svg { max-width: 100%; }
   var typing = false;
   var history = [];
   var histIdx = -1;
+  var embryoCount = 0;
+
+  var TREX_ART = [
+    "         ___",
+    "        / _ )",
+    "   .---^^--/__",
+    "  /  o  o o   |",
+    " /  _  _  _  _|",
+    " | | || | || |",
+    " \\ |_|| |_||_|",
+    "  \\____/____/",
+    "    |     |",
+    "   /       \\"
+  ].join("\n");
+  var RAPTOR_ART = [
+    "     .---.",
+    "    /     \\",
+    "   /  o o  \\",
+    "  |   ___   |",
+    "  |  |   |  |",
+    "   \\ |   | /",
+    "    \\|   |/",
+    "     |   |",
+    "    /     \\",
+    "   /       \\"
+  ].join("\n");
 
   function termLine(html, cls){
     if(!termBody) return;
@@ -970,8 +1080,17 @@ svg { max-width: 100%; }
       out.push("  species     dino species census");
       out.push("  budget      budget ledger: real calls, real numbers");
       out.push("  status      park state snapshot");
-      out.push("  clear       wipe the screen");
+      out.push("  tour        guided tour of Isla Nublar");
+      out.push("  t-rex       check on the big one");
+      out.push("  raptors     raptor paddock cam");
+      out.push("  dilophosaurus  the spitter paddock");
+      out.push("  power       fence power grid");
+      out.push("  feed <x>    feed a dino (goat optional)");
+      out.push("  embryos     count the stolen embryos");
+      out.push("  malcolm / grant / sattler / hammond   quotes");
+      out.push("  dino        random dino cameo");
       out.push("  nedry       do not feed the raptors");
+      out.push("  clear       wipe the screen");
       out.push("  help        this list. you found it.");
     } else if(c === "staff"){
       out.push(nBots + " staff on roster, grouped by division:");
@@ -1024,11 +1143,94 @@ svg { max-width: 100%; }
       out.push("infrastructure: ACU, ranger jeep, weather station all nominal.");
       out.push("verdict: all paddocks secure. the T-Rex eats on pocket change.");
     } else if(c === "nedry"){
+      embryoCount = Math.min(15, embryoCount + 1);
       out.push("Dennis Nedry: 'Uh uh uh... you didn't say the magic word.'");
       out.push("He is in the park. He left the computer system wide open.");
       out.push("Jurassic Park fence status: " + (Math.random() < 0.5 ? "ALL FENCES SECURE" : "FENCE 4 DOWN - rangers dispatched"));
-      out.push("Secret: the raptor paddock power was NOT restored. pray they hold.");
-      out.push("...also he stole the embryos. watch the embroy freezer. - park management");
+      out.push("Embryo canisters in the Barbasol: " + embryoCount + "/15");
+      out.push("...also he stole the embryos. watch the shaving cream. - park management");
+    } else if(c === "tour"){
+      var TOURS = [
+        "'Welcome to Jurassic Park.' - John Hammond",
+        "Malcolm: 'God creates dinosaurs. God destroys dinosaurs. God creates man. Man destroys God. Man creates dinosaurs.'",
+        "Malcolm: 'Your scientists were so preoccupied with whether or not they could, they didn't stop to think if they should.'",
+        "Grant: 'Dinosaurs and man, two species separated by 65 million years of evolution, suddenly thrown back into the mix together.'",
+        "Hammond: 'We have a T-Rex.'",
+        "Ray Arnold: 'Hold on to your butts.'",
+        "Malcolm: 'Life finds a way.'",
+        "Sattler: 'It's a dinosaur. It's enormous.'",
+        "Muldoon: 'Clever girl.'"
+      ];
+      out.push("TOUR ROUTE 4 - 'WHEN DINOSAURS RULED THE PARK':");
+      out.push("  " + TOURS[Math.floor(Math.random() * TOURS.length)]);
+      out.push("  next stop: the raptor paddock. keep arms inside the vehicle.");
+    } else if(c === "t-rex" || c === "trex"){
+      out.push(TREX_ART);
+      out.push("T-REX PADDOCK:");
+      out.push("  fence status: electric. do not touch the fence.");
+      out.push("  last sighting: tour road, 14:02. still hungry.");
+      out.push("  roar: 108dB. house-shaking. fence-shaking. soul-shaking.");
+      out.push("  'When you gotta go, you gotta go.'");
+    } else if(c === "raptors" || c === "raptor"){
+      out.push(RAPTOR_ART);
+      out.push("RAPTOR PADDOCK - security cam feed:");
+      out.push("  containment: " + (Math.random() < 0.7 ? "SECURE (for now)" : "BREACH IN PROGRESS - lock the doors"));
+      out.push("  'Clever girl.' - Muldoon, watching you");
+      out.push("  raptors observed: 2. Muldoon counted 3. one is missing.");
+    } else if(c === "dilophosaurus" || c === "spitter"){
+      out.push("DILOPHOSAURUS PADDOCK - keep your distance:");
+      out.push("  frill: ready. venom: loaded. aim: your face.");
+      out.push("  'It spits. It spits venom.' - Nedry, seconds before his exit");
+      out.push("  do NOT offer it a shaving cream can.");
+    } else if(c === "power"){
+      out.push("FENCE POWER GRID (mainland feed):");
+      out.push("  fence 1 [#########-] 95%");
+      out.push("  fence 2 [##########] 100%");
+      out.push("  fence 3 [##########] 100%");
+      out.push("  fence 4 [####------] 40%  <-- nedry's doing");
+      out.push("  raptor paddock [##--------] 20% - CRITICAL");
+      out.push("  auxiliary generators: online. reserve: 72h.");
+      out.push("  tip: don't shut down the system for one night.");
+    } else if(c.indexOf("feed") === 0){
+      var prey = c.slice(4).trim() || "the raptors";
+      var fr = Math.random();
+      out.push("feeding " + prey + "...");
+      if(fr < 0.4) out.push(prey + " accepts the goat. everyone lives.");
+      else if(fr < 0.8) out.push(prey + " stares at you. slowly. you back away. it follows.");
+      else out.push("you are now the main course. thanks for volunteering.");
+    } else if(c === "embryos"){
+      out.push("embryo canister status: " + embryoCount + " of 15 stolen.");
+      if(embryoCount >= 15) out.push("ALL EMBRYOS GONE. Nedry got his payday. Barbasol location: UNKNOWN.");
+      else if(embryoCount > 0) out.push("Nedry has been busy. the Barbasol canister is heavy.");
+      else out.push("none stolen yet. keep an eye on the shaving cream.");
+    } else if(c === "malcolm"){
+      out.push("DR. IAN MALCOLM:");
+      out.push("  'Chaos theory. It deals with unpredictability in complex systems.'");
+      out.push("  'The park is a huge mistake. Let's charge $10 a head.'");
+      out.push("  'I'm always extremely careful.'");
+    } else if(c === "grant"){
+      out.push("DR. ALAN GRANT:");
+      out.push("  'We're out of a job. We don't have a future.'");
+      out.push("  'Don't move. It can't see us if we don't move.'");
+      out.push("  *raptor vision is based on movement* ... he was wrong. run.");
+    } else if(c === "sattler"){
+      out.push("DR. ELLIE SATTLER:");
+      out.push("  'We can't just run. We have to stay and fight.'");
+      out.push("  'It's a dinosaur. It's enormous.'");
+      out.push("  also: it is her idea to turn the power back on. respect.");
+    } else if(c === "hammond"){
+      out.push("JOHN HAMMOND:");
+      out.push("  'Spared no expense.'");
+      out.push("  'We have made a fortune with this park, and I intend to continue.'");
+      out.push("  park budget so far: " + fmtUsd(totalCost) + ". that's the whole point.");
+    } else if(c === "dino" || c === "dinosaur"){
+      if(Math.random() < 0.5){
+        out.push(TREX_ART);
+        out.push("the big one. do not pet.");
+      } else {
+        out.push(RAPTOR_ART);
+        out.push("clever girl. also do not pet.");
+      }
     } else if(c === "spared no expense"){
       out.push("SPARE NO EXPENSE.");
       out.push("Dr. Hammond is pleased with your budget discipline: " + fmtUsd(totalCost) + " total.");
@@ -1051,6 +1253,19 @@ svg { max-width: 100%; }
   }
 
   if(termForm && termInput){
+    var termQuick = $("term-quick");
+    if(termQuick){
+      termQuick.addEventListener("click", function(ev){
+        var b = ev.target.closest("button");
+        if(!b) return;
+        var cmd = b.dataset.cmd;
+        if(typing || !cmd) return;
+        history.push(cmd);
+        histIdx = history.length;
+        termRaw("park@nublar:~$ " + cmd);
+        runCommand(cmd);
+      });
+    }
     termForm.addEventListener("submit", function(ev){
       ev.preventDefault();
       var v = termInput.value;
@@ -1086,9 +1301,10 @@ svg { max-width: 100%; }
   if(termBody && termInput){
     setTimeout(function(){
       var boot = [
-        "park console " + (D ? "v1.0 - jurassic theme" : "v1.0 (no data.js found - static shell)"),
-        "connected to data.js: " + nBots + " staff, " + nCrews + " divisions, " + COST.length + " ledger rows",
-        "type 'help' to see what this thing can do."
+        "park console " + (D ? "v2.0 - jurassic interactive" : "v2.0 (no data.js found - static shell)"),
+        "welcome to jurassic park. hold on to your butts.",
+        "connected: " + nBots + " staff, " + nCrews + " divisions, " + COST.length + " ledger rows, fences powered",
+        "type 'help' or tap a quick command. do not feed the raptors."
       ];
       typing = true;
       termInput.disabled = true;
@@ -1230,6 +1446,46 @@ svg { max-width: 100%; }
   var stamp = $("foot-stamp");
   if(stamp){
     stamp.textContent = "rendered " + new Date().toISOString().slice(0,16).replace("T"," ") + " UTC from window.FLEET_DATA";
+  }
+
+  /* ---------- logo roar ---------- */
+  var brandMark = document.querySelector(".brand-mark");
+  if(brandMark){
+    brandMark.setAttribute("title", "click to roar");
+    brandMark.style.cursor = "pointer";
+    brandMark.addEventListener("click", function(){
+      if(!termBody || typing) return;
+      termRaw("park@nublar:~$ roar");
+      typing = true;
+      if(termInput) termInput.disabled = true;
+      typeLines([
+        "ROOOOOAAAAAR!",
+        "the T-Rex acknowledges you. run.",
+        "(that was the logo. the real one is louder.)"
+      ], function(){
+        typing = false;
+        if(termInput){ termInput.disabled = false; termInput.focus(); }
+      });
+    });
+  }
+
+  /* ---------- raptor watch ticker ---------- */
+  var rw = $("raptor-watch");
+  if(rw){
+    var RAPTOR_WATCH = [
+      "raptor watch: all clear",
+      "raptor watch: movement near fence 4",
+      "raptor watch: the goat is gone",
+      "raptor watch: 'clever girl' echoed twice",
+      "raptor watch: power grid stable",
+      "raptor watch: they are testing the fences"
+    ];
+    var ri = 0;
+    rw.textContent = RAPTOR_WATCH[0];
+    setInterval(function(){
+      ri = (ri + 1) % RAPTOR_WATCH.length;
+      rw.textContent = RAPTOR_WATCH[ri];
+    }, 12000);
   }
 
   /* ---------- data marker for verification ---------- */
