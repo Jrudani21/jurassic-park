@@ -87,6 +87,55 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation:none !important; transition:none !important; }
   }
+/* ============ MOBILE FRIENDLINESS (added by KEN 2026-08-14) ============ */
+/* Kill horizontal overflow: nothing wider than the viewport */
+html, body { max-width: 100%; overflow-x: hidden; }
+.wrap, main, header.page, .topbar .wrap, footer { max-width: 100vw !important; padding-left: 14px !important; padding-right: 14px !important; }
+
+/* Tables: let them scroll inside their wrapper instead of blowing the page wide */
+table, .ledger, .tblwrap { max-width: 100%; }
+.ledger-scroll, .tblwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ledger { min-width: 0 !important; }
+
+/* Grids collapse to 1 column on small screens */
+.stats-grid, .crew-grid, .legend-grid, .diag-grid, .grid, .cachegrid, .registry,
+.stats, .fgroup { grid-template-columns: 1fr !important; }
+
+/* Charts scale to container */
+.chartbox svg, .chartbox { max-width: 100%; height: auto; }
+svg { max-width: 100%; }
+
+/* Terminal: constrain input + body */
+.terminal, .term-body, .term-form { max-width: 100%; }
+.term-input { max-width: 100%; }
+
+/* Topbar: brand + nav wrap cleanly, no horizontal scroll */
+.topbar .wrap { flex-wrap: wrap; }
+.topbar nav { overflow-x: auto; max-width: 100%; }
+
+/* Bigger tap targets + readable text on phones */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .stat-num { font-size: 30px; }
+  .brand-name { font-size: 20px; }
+  .panel-title, .lede, .term-title { font-size: 17px; }
+  .tier-row { grid-template-columns: 1fr; gap: 6px; }
+  .tier-name, .tier-count { font-size: 16px; }
+  .member-chip, .lg-chip, .chip { min-height: 44px; padding: 8px 12px; }
+  .crew-card, .stat-cell, .legend-panel { padding: 12px; }
+  .pfield { grid-template-columns: 1fr; }
+  .card { padding: 14px; }
+  section { margin-bottom: 32px; }
+}
+@media (max-width: 400px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
+  .brand-sub { display: none; }
+}
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; transition-duration: .001s !important; }
+}
+
 </style>
 </head>
 <body>
