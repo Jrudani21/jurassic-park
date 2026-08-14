@@ -7,7 +7,7 @@ spawned from a Hermes cron inherits them and crashes (ken_service: pydantic_core
 ModuleNotFoundError). This wrapper strips all three, then execs the target.
 
 Use for ALL new cron scripts (Tier 2/3/4): point the cron at a thin wrapper
-in ~/AppData/Local/hermes/scripts/ that calls this with the real script path.
+in the local Hermes scripts dir that calls this with the real script path.
 """
 import os
 import subprocess

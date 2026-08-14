@@ -54,8 +54,12 @@ def _key(name: str) -> str:
     _cache_ = getattr(_key, "_env", None)
     if _cache_ is None:
         _env: dict[str, str] = {}
-        for p in (os.path.expandvars(r"%LOCALAPPDATA%/hermes/.env"),
-                  os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")):
+        _env_files = [os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")]
+        # Optional extra env file, machine-specific - supplied via env var only
+        _extra = os.environ.get("FLEET_ENV_FILE")
+        if _extra:
+            _env_files.append(_extra)
+        for p in _env_files:
             p = os.path.expandvars(p)
             try:
                 with open(p, encoding="utf-8") as f:
@@ -67,7 +71,7 @@ def _key(name: str) -> str:
             except OSError:
                 pass
         _key._env = _env  # type: ignore[attr-defined]
-    return _cache_.get(name, "")  # type: ignore[union-attr]
+    return _key._env.get(name, "")  # type: ignore[union-attr]
 
 
 TIERS = {
@@ -431,8 +435,8 @@ def _chat_frontier(messages: list[dict], temperature: float, max_tokens: int) ->
     """Claude frontier tier.
 
     Fast path: read the OAuth access token from the Claude Code credentials
-    file (~/.claude/.credentials.json — the SAME store the VS Code Claude
-    extension and `hermes` use) and call the Anthropic Messages API directly.
+    file (the standard ~/.claude/.credentials.json store) and call the
+    Anthropic Messages API directly.
     Safety net: if the direct call fails (expired token, rate limit), fall
     back to `hermes chat -Q` which handles refresh + identity headers.
     """

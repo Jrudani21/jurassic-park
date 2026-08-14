@@ -77,7 +77,7 @@ Failover: `pro→flash→openrouter→groq→free→local` (`_shared/llm.py chat
 | `supervisor.py` | weak-tier failure heuristics (empty/gibberish/loop/refusal) |
 | `data_collector.py` | free keyless data (Reddit JSON, HN Algolia, RSS, web) |
 
-Keys: `_key()` = env → `%LOCALAPPDATA%/hermes/.env` → repo `.env`.
+Keys: `_key()` = env → optional extra env file (`FLEET_ENV_FILE`) → repo `.env`.
 Embeddings ALWAYS local MiniLM. **PII never leaves local** (21-pii is
 deterministic, no model).
 
