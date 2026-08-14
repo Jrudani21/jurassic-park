@@ -52,6 +52,8 @@
   p { color:var(--dim); margin:8px 0; }
   b, .fg { color:var(--fg); }
   table { width:100%; border-collapse:collapse; margin:14px 0; font-size:.9rem; }
+  .tblwrap { overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+  .tblwrap table { margin:0; }
   th, td { border:1px solid var(--border); padding:9px 12px; text-align:left; }
   th { background:var(--panel); color:var(--fg); }
   .rule { background:var(--panel); border-left:3px solid var(--amber); border-radius:6px;
@@ -175,13 +177,13 @@ failure. Zero-credit local species first.</div>
 
 <h2>1. Classification by task kind</h2>
 <p>Every request gets a <b>task kind</b>; the kind routes to a species. This is the core sort.</p>
-<table>
+<div class="tblwrap"><table>
   <tr><th>Task kind</th><th>Sorted to</th><th>Species</th><th>Why</th></tr>
   <tr><td>summarize · extract · template · recipe · classify · travel · draft</td><td>LOCAL</td><td>Compsognathus</td><td>Mechanical, template-shaped - a tiny local genome is enough, $0</td></tr>
   <tr><td>(everything else - default)</td><td>FLASH</td><td>Triceratops</td><td>Default quality work, ~$0.14/M, reliable</td></tr>
   <tr><td>analysis · reasoning · debate · financial</td><td>PRO</td><td>Tyrannosaurus Rex</td><td>Deep reasoning needs the heaviest genome, ~$0.43/M</td></tr>
   <tr><td>deep-analysis · hard-reasoning · complex-reasoning · frontier</td><td>FRONTIER</td><td>Indominus Rex</td><td>Flagship engineered hybrid via Pro subscription (in-app Claude Code limit ~50% higher than documented)</td></tr>
-</table>
+</table></div>
 <p>Unknown kinds default to <b class="fg">Triceratops</b> (quality over cost). The routing lives in
 <b class="fg">agents/_shared/llm.py → tier_of(task_kind)</b>.</p>
 
@@ -189,13 +191,13 @@ failure. Zero-credit local species first.</div>
 <p>When a billed species fails (rate-limit, overload, connection error), the call cascades down
 through the <b>free-roaming species</b> before landing on the breeding facility (local). Each was
 probe-verified before release into the park:</p>
-<table>
+<div class="tblwrap"><table>
   <tr><th>Species</th><th>Provider / model</th><th>Verified how</th></tr>
   <tr><td>Gallimimus</td><td>Bluesminds - llama-3.1-70b</td><td>Probe call 200; 600 req/day cap</td></tr>
   <tr><td>Brachiosaurus</td><td>OpenRouter - nemotron-3-super-120b :free</td><td>Probe verified working (120B MoE, $0)</td></tr>
   <tr><td>Velociraptor</td><td>Groq - llama-3.3-70b</td><td>Fastest; fixed a Cloudflare 403/1010 UA-block to make it work</td></tr>
   <tr><td>Dilophosaurus</td><td>NVIDIA NIM - llama-3.1-8b ★</td><td>Key tested live; 8b always warm (~1s); 70b exists but cold-starts 4-10 min</td></tr>
-</table>
+</table></div>
 <p class="fg" style="color:var(--dim)">Full fallback order:
 <span class="chip c-pro">T-Rex</span> → <span class="chip c-flash">Triceratops</span> →
 <span class="chip c-openrouter">Brachiosaurus</span> → <span class="chip c-groq">Velociraptor</span> →
@@ -224,13 +226,13 @@ start with the smallest species (local/free), and <b>escalate only on a structur
 </ul>
 
 <h2>5. DNA bank & caching - why $0 is real</h2>
-<table>
+<div class="tblwrap"><table>
   <tr><th>Layer</th><th>Mechanism</th><th>Effect</th></tr>
   <tr><td>L1 primary samples</td><td>Disk cache on identical requests</td><td>Repeated calls: 0 credits</td></tr>
   <tr><td>L2 genetic matching</td><td>MiniLM embeddings, cosine ≥0.93</td><td>Near-identical questions: 0 credits</td></tr>
   <tr><td>L3 deep genome prefix</td><td>DeepSeek auto prompt cache (stable species prefix + dynamic tail)</td><td>~68% prefix hit on second call, 256-token floor</td></tr>
   <tr><td>Local sequencing</td><td>sentence-transformers MiniLM, ollama nomic-embed-text</td><td>RAG/embeddings never billed</td></tr>
-</table>
+</table></div>
 <p class="fg">The DNA bank runs at <b>$0.000030/week</b>. Billed species are avoided during DeepSeek
 peak hours (UTC 01:00-04:00 & 06:00-10:00); free species and local are allowed anytime.</p>
 
