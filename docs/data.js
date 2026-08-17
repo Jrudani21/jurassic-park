@@ -1,5 +1,5 @@
 window.FLEET_DATA = {
- "generated_at": "2026-08-14T16:06:36",
+ "generated_at": "2026-08-17T05:00:38",
  "fleets": [
   {
    "id": "ops",
@@ -833,36 +833,36 @@ window.FLEET_DATA = {
    "last_run": "2026-08-13T09:31:04.485954"
   },
   "ops-boss": {
-   "last_run": "2026-08-14T06:31:34.181749",
-   "last_heartbeat": 1786715681.588266
+   "last_run": "2026-08-15T17:28:35.763513",
+   "last_heartbeat": 1786832436.7022755
   },
   "health-watch": {
-   "last_run": "2026-08-14T10:07:03.598821",
-   "last_heartbeat": 1786702029.7027476
+   "last_run": "2026-08-15T17:28:35.763513",
+   "last_heartbeat": 1786832549.2714727
   },
   "qa-tester": {
-   "last_run": "2026-08-14T15:18:02.527226",
-   "last_heartbeat": 1786738541.886375
+   "last_run": "2026-08-15T17:28:35.763513",
+   "last_heartbeat": 1786832549.283667
   },
   "career-ops": {
-   "last_run": "2026-08-13T10:01:11.547838"
+   "last_run": "2026-08-14T18:38:08.852236"
   },
   "testbot": {
    "last_heartbeat": 1786633992.6696076
   },
   "qa-lead": {
-   "last_run": "2026-08-14T06:31:34.181749",
-   "last_heartbeat": 1786707025.1552825
+   "last_run": "2026-08-15T17:28:35.763513",
+   "last_heartbeat": 1786832436.7998278
   },
   "research-lead": {
-   "last_run": "2026-08-14T06:46:42.953830",
-   "last_heartbeat": 1786707919.1359541
+   "last_run": "2026-08-15T17:28:35.763513",
+   "last_heartbeat": 1786832436.8983123
   },
   "news-digest": {
-   "last_run": "2026-08-14T07:04:38.457076"
+   "last_run": "2026-08-15T17:28:35.763513"
   },
   "qa-tester-standby": {
-   "last_run": "2026-08-14T09:34:38.875106"
+   "last_run": "2026-08-14T23:08:30.531234"
   },
   "weather-sweep": {
    "last_run": "2026-08-14T10:14:39.248931"
@@ -1139,6 +1139,754 @@ window.FLEET_DATA = {
    "model": "meta/llama-3.1-8b-instruct",
    "prompt_tokens": 42,
    "completion_tokens": 4,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-15T22:23:39.203531+00:00",
+   "tier": "flash",
+   "model": "qwen3:8b",
+   "prompt_tokens": 182,
+   "completion_tokens": 800,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T01:45:17.529563+00:00",
+   "tier": "local",
+   "model": "qwen3:8b",
+   "prompt_tokens": 142,
+   "completion_tokens": 249,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T01:52:58.635195+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 150,
+   "completion_tokens": 170,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T01:53:27.080543+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 273,
+   "completion_tokens": 233,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T01:53:51.092052+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 251,
+   "completion_tokens": 246,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:09:06.279133+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 294,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.000525,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:09:08.703542+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 281,
+   "completion_tokens": 207,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.000397,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:09:53.210807+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 557,
+   "completion_tokens": 961,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:09:59.312581+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 732,
+   "completion_tokens": 528,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.001019,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:10:02.038679+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 731,
+   "completion_tokens": 238,
+   "cache_hit_tokens": 640,
+   "peak": true,
+   "est_cost_usd": 0.000364,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:22:04.930253+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 260,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:22:07.017645+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 250,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:22:38.818813+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 260,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:25:42.289945+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 260,
+   "completion_tokens": 815,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:25:44.303246+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 888,
+   "completion_tokens": 151,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.00059,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:25:49.785442+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 250,
+   "completion_tokens": 834,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T02:25:52.057516+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 952,
+   "completion_tokens": 192,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.000672,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:27:09.847663+00:00",
+   "tier": "local",
+   "model": "qwen3:8b",
+   "prompt_tokens": 145,
+   "completion_tokens": 415,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:27:40.661842+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 165,
+   "completion_tokens": 125,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:27:41.842446+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 165,
+   "completion_tokens": 147,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:27:42.646375+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 165,
+   "completion_tokens": 147,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:27:43.580362+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 165,
+   "completion_tokens": 124,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:27:45.653970+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 212,
+   "completion_tokens": 155,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000149,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:27:48.654732+00:00",
+   "tier": "pro",
+   "model": "deepseek-v4-pro",
+   "prompt_tokens": 212,
+   "completion_tokens": 171,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000478,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:31:19.533312+00:00",
+   "tier": "local",
+   "model": "qwen3:8b",
+   "prompt_tokens": 16,
+   "completion_tokens": 569,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:37:39.811655+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 104,
+   "completion_tokens": 117,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:37:52.788810+00:00",
+   "tier": "pro",
+   "model": "deepseek-v4-pro",
+   "prompt_tokens": 212,
+   "completion_tokens": 150,
+   "cache_hit_tokens": 128,
+   "peak": false,
+   "est_cost_usd": 0.000355,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:40:38.397491+00:00",
+   "tier": "local",
+   "model": "qwen3:8b",
+   "prompt_tokens": 145,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:41:18.251045+00:00",
+   "tier": "local",
+   "model": "qwen3:8b",
+   "prompt_tokens": 145,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:41:40.732061+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 165,
+   "completion_tokens": 125,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:41:48.095696+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 152,
+   "completion_tokens": 218,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:41:49.108453+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 165,
+   "completion_tokens": 147,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:41:51.227603+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 212,
+   "completion_tokens": 136,
+   "cache_hit_tokens": 128,
+   "peak": false,
+   "est_cost_usd": 0.000109,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:41:56.064044+00:00",
+   "tier": "pro",
+   "model": "deepseek-v4-pro",
+   "prompt_tokens": 212,
+   "completion_tokens": 245,
+   "cache_hit_tokens": 128,
+   "peak": false,
+   "est_cost_usd": 0.000543,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:42:22.112333+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 86,
+   "completion_tokens": 75,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:42:35.737106+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 86,
+   "completion_tokens": 41,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:42:43.952112+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 86,
+   "completion_tokens": 250,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:42:44.440676+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 86,
+   "completion_tokens": 77,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:42:46.386310+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 135,
+   "completion_tokens": 157,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000133,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:42:49.729907+00:00",
+   "tier": "pro",
+   "model": "deepseek-v4-pro",
+   "prompt_tokens": 135,
+   "completion_tokens": 181,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000447,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:43:12.524349+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 92,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:43:52.523746+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 86,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:44:04.174453+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 72,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:44:05.243893+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 92,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:44:08.594934+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 140,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000229,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:44:33.944574+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 72,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:44:57.378931+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 71,
+   "completion_tokens": 163,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:45:11.430145+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 71,
+   "completion_tokens": 166,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:45:18.985872+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 54,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:45:19.461354+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 71,
+   "completion_tokens": 163,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:45:22.044870+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 118,
+   "completion_tokens": 247,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000189,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:45:25.973202+00:00",
+   "tier": "pro",
+   "model": "deepseek-v4-pro",
+   "prompt_tokens": 118,
+   "completion_tokens": 223,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000519,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:45:50.663196+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 69,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:48:00.547275+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 69,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:48:26.693614+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 69,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:48:34.309954+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 52,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:48:35.603605+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 69,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:49:00.226572+00:00",
+   "tier": "local",
+   "model": "qwen3:8b",
+   "prompt_tokens": 38,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:49:04.906053+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 63,
+   "completion_tokens": 43,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:49:19.579402+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 44,
+   "completion_tokens": 74,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:49:36.981451+00:00",
+   "tier": "local",
+   "model": "qwen3:8b",
+   "prompt_tokens": 40,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:49:52.942886+00:00",
+   "tier": "free",
+   "model": "meta/llama-3.1-70b-instruct",
+   "prompt_tokens": 65,
+   "completion_tokens": 215,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:50:07.140172+00:00",
+   "tier": "openrouter",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "prompt_tokens": 52,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:50:08.111675+00:00",
+   "tier": "groq",
+   "model": "llama-3.3-70b-versatile",
+   "prompt_tokens": 65,
+   "completion_tokens": 288,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:50:10.307778+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 119,
+   "completion_tokens": 196,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000156,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T16:50:19.989075+00:00",
+   "tier": "flash",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 119,
+   "completion_tokens": 300,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.000224,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T19:25:05.278504+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 257,
+   "completion_tokens": 567,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-08-16T19:28:39.508356+00:00",
+   "tier": "nvidia",
+   "model": "meta/llama-3.1-8b-instruct",
+   "prompt_tokens": 152,
+   "completion_tokens": 27,
    "cache_hit_tokens": 0,
    "peak": false,
    "est_cost_usd": 0.0,
