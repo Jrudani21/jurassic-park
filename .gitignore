@@ -18,3 +18,13 @@ data/
 # LLM response cache (runtime)
 agents/_shared/.llm_cache/
 agents/*/demo.sqlite
+
+# Machine-specific setup / fix scratch (never share — paths, credentials, logs)
+*.log
+logs/
+setup-wsl-model-disk.*
+fix-c-drive.*
+migrate-model-to-ext4.sh
+relocate-to-ext4.sh
+finish-migration.sh
+scripts/bench-draft.sh
