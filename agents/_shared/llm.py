@@ -74,12 +74,35 @@ def _key(name: str) -> str:
     return _key._env.get(name, "")  # type: ignore[union-attr]
 
 
+def _ollama_base() -> str:
+    """Ollama's OpenAI-compatible API lives under /v1.
+
+    A machine-level OLLAMA_BASE_URL is commonly set to the bare host
+    (http://localhost:11434) for Ollama's own native API — that value 404s
+    every OpenAI-style call and silently knocks the whole local tier out of
+    the fallback chain. Normalize instead of trusting the env var.
+    """
+    base = (os.getenv("OLLAMA_BASE_URL") or "http://localhost:11434").rstrip("/")
+    return base if base.endswith("/v1") else base + "/v1"
+
+
 TIERS = {
     "local": {
-        "base_url": os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
+        "base_url": _ollama_base(),
         "model": os.getenv("OLLAMA_MODEL", "qwen3:8b"),
         "api_key": "ollama",
         "cost": "$0",
+    },
+    # Colibri — NVMe weight-streaming local inference (see docs/COLIBRI_PLAN.md).
+    # INERT until COLIBRI_BASE_URL is set: no agent reaches this tier by
+    # default, and it is deliberately absent from every fallback chain below.
+    # Decode is expected in the low single-digit tok/s, i.e. minutes per call —
+    # batch/offline work only, never an interactive path.
+    "batch-local": {
+        "base_url": os.getenv("COLIBRI_BASE_URL", ""),
+        "model": os.getenv("COLIBRI_MODEL", "deepseek-v4-flash"),
+        "api_key": "colibri",
+        "cost": "$0 (local, ~$5-10/mo electricity at 24/7)",
     },
     # Bluesminds — free cloud relay (llama-8b tier, $100/mo program)
     "free": {
@@ -144,6 +167,9 @@ _FALLBACK = {
     "nvidia": ["nvidia", "groq", "openrouter", "free", "local"],
     "free": ["free", "openrouter", "groq", "nvidia", "local"],
     "local": ["local"],
+    # batch-local never falls back to a paid tier and no tier falls back TO it:
+    # a 3-10 minute call must not silently substitute for an interactive one.
+    "batch-local": ["batch-local", "local"],
 }
 
 # Rule-based routing: task kind -> tier (research-backed; see ROUTING.md)
@@ -253,7 +279,11 @@ def get_client(tier: str = "flash") -> OpenAI:
     if tier not in TIERS:
         raise ValueError(f"unknown tier '{tier}' (use {sorted(TIERS)})")
     cfg = TIERS[tier]
-    if tier != "local" and not cfg["api_key"]:
+    if tier == "batch-local" and not cfg["base_url"]:
+        raise RuntimeError(
+            "batch-local tier not configured — set COLIBRI_BASE_URL "
+            "(see docs/COLIBRI_PLAN.md)")
+    if tier not in ("local", "batch-local") and not cfg["api_key"]:
         raise RuntimeError(f"NO_API_KEY for tier '{tier}' — set DEEPSEEK_API_KEY")
     # Browser User-Agent: Groq is behind Cloudflare and 403/error-1010s
     # default SDK/urllib UAs (verified 2026-08-13). Harmless elsewhere.
@@ -274,11 +304,15 @@ def _chat_for_escalation(tier: str, messages: list[dict]) -> tuple[str, str]:
             if t == "frontier":
                 return _chat_frontier(messages, 0.2, 1024), t
             cfg = TIERS[t]
-            call_kwargs = dict(kwargs)
-            call_kwargs.pop("model", None)
+            # NOTE: this used to build `call_kwargs = dict(kwargs)`, but this
+            # function takes no **kwargs — it raised NameError on every
+            # non-frontier tier, was swallowed by the `except Exception` below,
+            # and silently made `frontier` (Claude) the ONLY tier escalation
+            # could ever succeed on. That quietly spent Claude subscription
+            # quota on work the cheaper tiers were supposed to absorb.
             resp = get_client(t).chat.completions.create(
                 model=cfg["model"], messages=messages,
-                temperature=0.2, max_tokens=1024, **call_kwargs,
+                temperature=0.2, max_tokens=1024,
             )
             content = resp.choices[0].message.content
             if content:
@@ -495,11 +529,41 @@ def _chat_frontier_direct(model: str, prompt: str, temperature: float, max_token
     return resp.json()["content"][0]["text"]
 
 
+def _hermes_bin() -> str:
+    """Locate the Hermes/Ken CLI executable.
+
+    Bare "hermes" is NOT on PATH on this machine (`shutil.which("hermes")` is
+    None) — the Ken fork ships the entrypoint as `.venv/Scripts/hermes.exe`
+    plus a `hermes` python launcher script that Windows will not exec directly.
+    Calling "hermes" therefore raised FileNotFoundError, so the OAuth-refresh
+    safety net below never actually ran: the direct Anthropic call was the only
+    working Claude path, and once its token expired there was no recovery.
+
+    Resolution order: HERMES_BIN override -> PATH -> known Ken venv location.
+    """
+    import shutil
+
+    override = os.getenv("HERMES_BIN")
+    if override and os.path.exists(override):
+        return override
+    found = shutil.which("hermes") or shutil.which("hermes.exe")
+    if found:
+        return found
+    fallback = os.path.join(
+        os.getenv("KEN_REPO", r"E:\Local\projects\ken-agent"),
+        ".venv", "Scripts", "hermes.exe")
+    return fallback if os.path.exists(fallback) else "hermes"
+
+
 def _chat_frontier_hermes(model: str, prompt: str, direct_err: Exception) -> str:
     """Safety net: hermes CLI auto-refreshes the OAuth token + identity headers."""
-    cmd = ["hermes", "chat", "-q", prompt, "-Q", "-m", f"anthropic/{model}"]
+    cmd = [_hermes_bin(), "chat", "-q", prompt, "-Q", "-m", f"anthropic/{model}"]
+    # The CLI reads its credential pool from HERMES_HOME; without it a shell
+    # that lacks the var falls back to a different (or empty) auth store.
+    env = dict(os.environ)
+    env.setdefault("HERMES_HOME", os.getenv("KEN_HOME", r"E:\Local\ken-home"))
     proc = subprocess.run(
-        cmd, capture_output=True, text=True, encoding="utf-8",
+        cmd, capture_output=True, text=True, encoding="utf-8", env=env,
         errors="replace", timeout=600, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
     )
     if proc.returncode != 0:
