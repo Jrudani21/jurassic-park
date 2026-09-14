@@ -449,7 +449,7 @@ svg { max-width: 100%; }
   if (ageH > 36) {
     var b = document.createElement('div');
     b.className = 'stale-banner';
-    b.textContent = 'Data is ' + Math.round(ageH) + 'h old (last refresh: ' + g + ') — the nightly refresh may be stuck.';
+    b.textContent = 'Data is ' + Math.round(ageH) + 'h old (last refresh: ' + g + ') - the nightly refresh may be stuck.';
     document.body.insertBefore(b, document.body.firstChild);
   }
 })();
