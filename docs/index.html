@@ -394,6 +394,15 @@ table.ledger{
 .lightbox .lb-close:hover{color:var(--amber);border-color:var(--amber)}
 
 /* ---------- footer ---------- */
+/* ---------- stale data banner ---------- */
+.stale-banner{
+  position:sticky;top:0;z-index:60;
+  background:var(--amber);color:#050508;
+  padding:10px 18px;
+  font-family:var(--body);font-size:14px;font-weight:600;
+  text-align:center;
+}
+
 footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px}
 .foot-row{
   display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;
@@ -674,6 +683,31 @@ svg { max-width: 100%; }
       <div class="diag-grid" id="diag-grid"></div>
     </section>
 
+    <!-- 07 guardrail log -->
+    <section id="guardrail">
+      <div class="sec-head">
+        <span class="sec-idx">07</span>
+        <h2 class="sec-title">Containment log</h2>
+        <span class="sec-rule"></span>
+        <span class="sec-note" id="guardrail-note">recent fence + vet events</span>
+      </div>
+      <div class="panel">
+        <div class="ledger-scroll">
+          <table class="ledger">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Source</th>
+                <th>Event</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="guardrail-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer>
@@ -696,6 +730,19 @@ svg { max-width: 100%; }
 </div>
 
 <script src="data.js"></script>
+<script>
+(function(){
+  var g = window.FLEET_DATA && window.FLEET_DATA.generated_at;
+  if (!g) return;
+  var ageH = (Date.now() - new Date(g).getTime()) / 36e5;
+  if (ageH > 36) {
+    var b = document.createElement('div');
+    b.className = 'stale-banner';
+    b.textContent = 'Data is ' + Math.round(ageH) + 'h old (last refresh: ' + g + ') — the nightly refresh may be stuck.';
+    document.body.insertBefore(b, document.body.firstChild);
+  }
+})();
+</script>
 <script>
 (function(){
   "use strict";
@@ -1395,6 +1442,32 @@ svg { max-width: 100%; }
     if(ledgerTotalEl) ledgerTotalEl.textContent = fmtUsd(totalCost);
   } else if(ledgerBody){
     ledgerBody.innerHTML = '<tr class="empty-row"><td colspan="7">no cost ledger data in data.js</td></tr>';
+  }
+
+  /* ---------- guardrail log (breaker/supervisor events) ---------- */
+  var GUARDRAIL = (D && D.guardrail_events) ? D.guardrail_events : [];
+  var guardBody = $("guardrail-body");
+  var guardNoteEl = $("guardrail-note");
+  if(guardBody){
+    if(!GUARDRAIL.length){
+      guardBody.innerHTML = '<tr class="empty-row"><td colspan="4">no guardrail events logged yet</td></tr>';
+      if(guardNoteEl) guardNoteEl.textContent = "no fence/vet events yet";
+    } else {
+      var gList = GUARDRAIL.slice().sort(function(a,b){
+        return String(b.ts).localeCompare(String(a.ts));
+      }).slice(0, 20);
+      var gHtml = "";
+      gList.forEach(function(e){
+        gHtml += "<tr>"
+               + '<td class="t-ts">' + esc(fmtTs(e.ts)) + "</td>"
+               + "<td>" + esc(e.source || "") + "</td>"
+               + "<td>" + esc(e.kind || "") + "</td>"
+               + "<td>" + esc(e.detail || e.reason || "") + "</td>"
+               + "</tr>";
+      });
+      guardBody.innerHTML = gHtml;
+      if(guardNoteEl) guardNoteEl.textContent = "showing " + gList.length + " of " + GUARDRAIL.length + " events";
+    }
   }
 
   /* ---------- park map + lightbox ---------- */

@@ -20,6 +20,7 @@ BOTS_JSON = _env("FLEET_BOTS_JSON")
 LEDGER = _env("FLEET_LEDGER")
 CACHE_DB = _env("FLEET_CACHE_DB")
 STATE = _env("FLEET_STATE")
+GUARDRAIL_LOG = os.environ.get("FLEET_GUARDRAIL_LOG")
 
 # Scrub private data before it reaches the public site: absolute local paths,
 # Windows user dirs, and private repo names -> generic placeholders.
@@ -72,6 +73,21 @@ def main():
     except Exception as e:
         print("WARN cost:", e)
 
+    # guardrail events (breaker/supervisor) - optional, no warning if unset/missing
+    out["guardrail_events"] = []
+    if GUARDRAIL_LOG and os.path.exists(GUARDRAIL_LOG):
+        try:
+            rows = []
+            with open(GUARDRAIL_LOG, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        try: rows.append(json.loads(line))
+                        except Exception: pass
+            out["guardrail_events"] = rows[-200:]
+        except Exception as e:
+            print("WARN guardrail:", e)
+
     # cache stats
     try:
         if os.path.exists(CACHE_DB):
@@ -88,6 +104,8 @@ def main():
             db.close()
             out["cache_tables"] = tabs
             out["cache_stats"] = stats
+        else:
+            print("WARN cache: CACHE_DB not found at", CACHE_DB)
     except Exception as e:
         print("WARN cache:", e)
 

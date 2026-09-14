@@ -16,8 +16,30 @@ degraded). 4xx auth/config errors are NOT breaker material (permanent).
 """
 from __future__ import annotations
 
+import json
 import threading
 import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+GUARDRAIL_LOG = DATA_DIR / "guardrail_events.jsonl"
+
+
+def log_guardrail_event(source: str, kind: str, provider: str = "", detail: str = "",
+                         **extra) -> None:
+    """Append one guardrail event line. Never raises."""
+    try:
+        entry = {"ts": datetime.now(timezone.utc).isoformat(), "source": source, "kind": kind}
+        if provider:
+            entry["provider"] = provider
+        entry["detail"] = detail
+        entry.update(extra)
+        DATA_DIR.mkdir(exist_ok=True)
+        with GUARDRAIL_LOG.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception:
+        pass  # logging must never break the caller
 
 
 class BreakerOpen(Exception):
@@ -63,6 +85,7 @@ class CircuitBreaker:
             self._failures = 0
             if self._state in ("open", "half_open"):
                 self._state = "closed"
+                log_guardrail_event("breaker", "breaker_closed", provider=self.name)
 
     def record_failure(self) -> None:
         with self._lock:
@@ -75,6 +98,8 @@ class CircuitBreaker:
             if self._failures >= self.failure_threshold:
                 self._state = "open"
                 self._opened_at = time.time()
+                log_guardrail_event("breaker", "breaker_open", provider=self.name,
+                                     detail=f"{self._failures} consecutive failures")
 
     def reset(self) -> None:
         with self._lock:
@@ -121,3 +146,4 @@ if __name__ == "__main__":
     print("after cooldown:", b.state, "allow:", b.allow())  # half_open, allow
     b.record_success()
     print("after success:", b.state, "allow:", b.allow())  # closed
+    print("guardrail log:", GUARDRAIL_LOG)

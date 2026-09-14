@@ -29,6 +29,8 @@ Design rules:
 import os
 import re
 
+from _shared.breaker import log_guardrail_event
+
 # Tiers that need supervision (weak/free). pro/frontier are trusted.
 _SUPERVISED_TIERS = {"local", "free", "openrouter", "groq", "nvidia"}
 
@@ -102,15 +104,20 @@ def supervise(tier: str, messages: list[dict], response: str,
         if ok:
             return response, tier, False
         # L1 failed — try LLM escalation if enabled and a callable was given
-        if os.getenv("LLM_SUPERVISOR", "0") == "1" and escalate is not None:
+        escalated = os.getenv("LLM_SUPERVISOR", "0") == "1" and escalate is not None
+        if escalated:
             target = os.getenv("LLM_SUPERVISOR_TIER", "flash")
             try:
                 better, used = escalate(target, messages)
                 ok2, _ = check(better)
                 if ok2 and better.strip():
+                    log_guardrail_event("supervisor", "supervisor_intervention", tier=tier,
+                                         reason=reason, escalated=True)
                     return better, used, True
             except Exception:
                 pass  # fall through to original
+        log_guardrail_event("supervisor", "supervisor_intervention", tier=tier,
+                             reason=reason, escalated=False)
         return response, tier, False
     except Exception:
         return response, tier, False
