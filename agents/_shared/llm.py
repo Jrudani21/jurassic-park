@@ -24,7 +24,6 @@ Usage:
 import os
 import subprocess
 from pathlib import Path
-from typing import Callable
 
 try:
     from dotenv import load_dotenv
@@ -74,23 +73,16 @@ def _key(name: str) -> str:
     return _key._env.get(name, "")  # type: ignore[union-attr]
 
 
-def _ollama_base() -> str:
-    """Ollama's OpenAI-compatible API lives under /v1.
-
-    A machine-level OLLAMA_BASE_URL is commonly set to the bare host
-    (http://localhost:11434) for Ollama's own native API — that value 404s
-    every OpenAI-style call and silently knocks the whole local tier out of
-    the fallback chain. Normalize instead of trusting the env var.
-    """
-    base = (os.getenv("OLLAMA_BASE_URL") or "http://localhost:11434").rstrip("/")
-    return base if base.endswith("/v1") else base + "/v1"
-
-
 TIERS = {
+    # Ollama-native retired fleet-wide (personal-assistant/ken-agent migrated
+    # 2026-09-12, adversarial-reviewed) — LM Studio is the standing local
+    # server now (port 1234); jurassic-park was the one holdout, and Ollama
+    # itself isn't even running anymore. Verified 2026-09-14: qwen/qwen3.5-9b
+    # correct, no empty-content failures like the old qwen3:8b/Ollama tier.
     "local": {
-        "base_url": _ollama_base(),
-        "model": os.getenv("OLLAMA_MODEL", "qwen3:8b"),
-        "api_key": "ollama",
+        "base_url": os.getenv("LMSTUDIO_BASE_URL", "http://127.0.0.1:1234/v1"),
+        "model": os.getenv("LMSTUDIO_MODEL", "qwen/qwen3.5-9b"),
+        "api_key": "lm-studio",
         "cost": "$0",
     },
     # Colibri — NVMe weight-streaming local inference (see docs/COLIBRI_PLAN.md).
@@ -127,11 +119,14 @@ TIERS = {
         "cost": "$0 (free tier)",
     },
     # NVIDIA NIM (build.nvidia.com) — free developer API tier, OpenAI-compatible.
-    # Verified 2026-08-14: 200 on /v1/models + chat. Default 8b = always warm
-    # (~0.4s); 70b exists but cold-starts 4-10min when unloaded (queue contention).
+    # meta/llama-3.1-8b-instruct hit end-of-life 2026-08-26 (410 Gone).
+    # Verified 2026-09-14: nemotron-3-super-120b-a12b live, ~1.2s, correct,
+    # no CoT overhead. nemotron-3.5-lightning-30b-a3b (thinking model) tried
+    # first but averaged 173s/call in eval_tiers.py under sequential load —
+    # reasoning tokens eat the budget same as the local qwen3:8b bug.
     "nvidia": {
         "base_url": "https://integrate.api.nvidia.com/v1",
-        "model": os.getenv("NVIDIA_MODEL", "meta/llama-3.1-8b-instruct"),
+        "model": os.getenv("NVIDIA_MODEL", "nvidia/nemotron-3-super-120b-a12b"),
         "api_key": _key("NVIDIA_API_KEY") or _key("KEN_NVIDIA_API_KEY"),
         "cost": "$0 (free tier)",
     },
@@ -188,90 +183,6 @@ def tier_of(task_kind: str) -> str:
     if k in _LOCAL_KINDS:
         return "local"
     return "flash"
-
-
-def cascade(task_kind: str, messages: list | None = None, system: str | None = None,
-            temperature: float = 0.2, max_tokens: int = 1024,
-            kind: str | None = None, docs: str | None = None,
-            validate: Callable | None = None, **kwargs) -> tuple[str, str]:
-    """CHEAP-FIRST CASCADE (research-backed 2026-08-14): route easy intents to
-    the cheap tier (local/free), escalate to a stronger tier ONLY on a
-    structured failure signal — empty output, refusal ("I cannot"), or a
-    caller-provided validator rejecting the answer.
-
-    Returns (content, tier_used). Escalation ladder: requested tier -> next
-    stronger (via _FALLBACK reversed). Never raises unless ALL tiers fail.
-
-    Args:
-        task_kind: routes the FIRST attempt (tier_of).
-        validate: optional callable(content) -> bool; False triggers escalation.
-    """
-    first = tier_of(task_kind)
-    # Escalate from cheap upward: reverse of the normal fallback chain,
-    # skipping tiers already tried. Normal fallback goes expensive->cheap;
-    # cascade goes cheap->expensive.
-    chain = list(dict.fromkeys(_FALLBACK.get(first, _FALLBACK["flash"])))
-    # _FALLBACK[first] starts at first (most expensive for that tier) and
-    # walks down. For cascade we want the reverse (cheap first), then up.
-    chain = list(reversed(chain))
-
-    messages = messages or []
-    if isinstance(messages, str):
-        messages = [{"role": "user", "content": messages}]
-    if system is None and kind:
-        system = prompts.stable_system(kind)
-    prefix: list[dict] = []
-    if system:
-        prefix.append({"role": "system", "content": system})
-    if docs:
-        prefix.append({"role": "system", "content": f"<reference-docs>\n{docs}\n</reference-docs>"})
-    msgs = prefix + list(messages)
-
-    last_err: Exception | None = None
-    tried: set[str] = set()
-    for t in chain:
-        if t in tried:
-            continue
-        tried.add(t)
-        brk = breaker.breaker_for(t)
-        if not brk.allow():
-            continue
-        try:
-            if t == "frontier":
-                content = _chat_frontier(msgs, temperature, max_tokens)
-            else:
-                cfg = TIERS[t]
-                call_kwargs = dict(kwargs)
-                call_kwargs.pop("model", None)
-                resp = get_client(t).chat.completions.create(
-                    model=cfg["model"], messages=msgs,
-                    temperature=temperature, max_tokens=max_tokens, **call_kwargs,
-                )
-                content = resp.choices[0].message.content
-                if content:
-                    cost_mod.record_usage(t, cfg["model"], resp.usage, caller="cascade")
-            if not (content or "").strip():
-                brk.record_failure()
-                continue  # empty -> escalate
-            low = content.lower()
-            if any(x in low for x in ("i cannot", "i can't", "cannot provide", "unable to", "as an ai")):
-                brk.record_failure()
-                continue  # refusal -> escalate
-            if validate is not None:
-                try:
-                    if not validate(content):
-                        brk.record_failure()
-                        continue  # validator rejected -> escalate
-                except Exception:
-                    brk.record_failure()
-                    continue
-            brk.record_success()
-            return content, t
-        except Exception as e:  # noqa: BLE001
-            last_err = e
-            brk.record_failure()
-            continue
-    raise RuntimeError(f"CASCADE_ALL_TIERS_FAILED ({first}): {last_err}")
 
 
 def get_client(tier: str = "flash") -> OpenAI:

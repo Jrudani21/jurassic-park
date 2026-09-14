@@ -125,17 +125,6 @@ def breaker_for(provider: str) -> CircuitBreaker:
         return _BREAKERS[provider]
 
 
-def reset_all() -> None:
-    with _breakers_lock:
-        for b in _BREAKERS.values():
-            b.reset()
-
-
-def states() -> dict[str, str]:
-    with _breakers_lock:
-        return {name: b.state for name, b in _BREAKERS.items()}
-
-
 if __name__ == "__main__":
     # self-test
     b = CircuitBreaker("test", failure_threshold=3, cooldown_s=1)

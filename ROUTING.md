@@ -12,11 +12,11 @@ Tiers (see `agents/_shared/llm.py` — the shared client ALL new agents use):
 
 | Tier   | Provider              | Cost      | Task kinds                              |
 |--------|-----------------------|-----------|------------------------------------------|
-| local  | Ollama `qwen3:8b`     | **$0**    | summarize, extract, template, recipe, classify, travel, draft |
+| local  | LM Studio `qwen3.5-9b`| **$0**    | summarize, extract, template, recipe, classify, travel, draft |
 | free   | Bluesminds relay      | **$0**    | cloud fallback (llama-3.1-70b verified working) |
 | openrouter | OpenRouter `:free` | **$0**    | cloud fallback (nemotron-3-super-120b verified) |
 | groq   | Groq free tier        | **$0**    | fast cloud fallback (llama-3.3-70b verified) |
-| nvidia | NVIDIA NIM free       | **$0**    | cloud fallback (llama-3.3-70b / 8b, verified 2026-08-14) |
+| nvidia | NVIDIA NIM free       | **$0**    | cloud fallback (nemotron-3-super-120b, verified 2026-09-14) |
 | flash  | DeepSeek v4-flash     | ~$0.14/M  | default quality work (most agents)       |
 | pro    | DeepSeek v4-pro       | ~$0.43/M  | analysis, reasoning, debate, financial   |
 
@@ -27,13 +27,20 @@ Tiers (see `agents/_shared/llm.py` — the shared client ALL new agents use):
   - `free` (Bluesminds): `meta/llama-3.1-70b-instruct`, 600 req/day cap.
   - `openrouter`: `nvidia/nemotron-3-super-120b-a12b:free` (120B MoE, $0).
   - `groq`: `llama-3.3-70b-versatile` (fastest of the three, free tier limits).
-  - `nvidia` (NIM): `meta/llama-3.1-8b-instruct` (default — always warm,
-    ~0.4s TTFT; `NVIDIA_MODEL` override for e.g. `meta/llama-3.3-70b-instruct`).
-    ⚠️ **70b cold-starts 4-10 min when unloaded** (free tier unloads after
-    idle, queue contention) — stick with 8b for fleet use; circuit breaker
-    + agent timeouts handle the rest; supervisor treats it as free.
+  - `nvidia` (NIM): `nvidia/nemotron-3-super-120b-a12b` (default —
+    `meta/llama-3.1-8b-instruct` hit end-of-life 2026-08-26, 410 Gone;
+    replaced 2026-09-14, ~1.2s TTFT, verified correct via `scripts/eval_tiers.py`.
+    `nemotron-3.5-lightning-30b-a3b` tried first (also live) but is a
+    thinking model — averaged 173s/call under sequential eval load, same
+    CoT-budget failure class as the local qwen3:8b bug. `NVIDIA_MODEL`
+    override still available.)
   Keys in repo `.env` (gitignored): `BLUESMINDS_API_KEY`, `OPENROUTER_API_KEY`,
   `GROQ_API_KEY`, `NVIDIA_API_KEY`. SambaNova key exists but has 0 balance — don't use.
+  ⚠️ **2026-09-14 eval:** `pro`/`flash` (DeepSeek) return 401 invalid key,
+  `openrouter` 401 user not found, `groq` 401 invalid key, `free` (Bluesminds)
+  500 server error. Only `nvidia` and `local` currently reachable — see
+  `data/eval_results.json`. Keys need regenerating at each provider; not a
+  code-side fix.
 - **Embeddings are ALWAYS local** (sentence-transformers MiniLM) — never billed.
 - **Sensitivity rule:** PII never leaves local. `21-pii` is deterministic
   regex (no LLM at all); anything PII-adjacent stays on tier local.
@@ -86,11 +93,12 @@ All 21 legacy agents now read `DEEPSEEK_API_BASE` / `DEEPSEEK_MODEL` env vars
 (defaults: api.deepseek.com / deepseek-v4-flash — unchanged behavior).
 To run any agent on local, set:
 
-    DEEPSEEK_API_BASE=http://localhost:11434/v1  DEEPSEEK_MODEL=qwen3:8b
+    DEEPSEEK_API_BASE=http://127.0.0.1:1234/v1  DEEPSEEK_MODEL=qwen/qwen3.5-9b
 
 Bot wiring (the assistant app, private):
 - `data/bots.json`: each agent bot has `tier` (local|flash|pro|none) + `env`
-  dict. Local-tier bots carry the Ollama env above.
+  dict. Local-tier bots carry the LM Studio env above (Ollama retired
+  fleet-wide 2026-09-12; jurassic-park's `local` tier followed 2026-09-14).
 - `qa/run_500agent.py`: `--env K=V K2=V2` forwards env to the agent process.
 - `qa/bot_runner.py`: builds the run command, appends `--env` from bot config.
 - New agents: `agents/_shared/llm.py` — `chat(tier, ...)` / `get_client(tier)`

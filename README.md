@@ -20,7 +20,7 @@ budget ledger = every real API call.** Every number on the dashboard is real, re
 
 | Tier | Dino | Model | Cost |
 |---|---|---|---|
-| local | Compsognathus | qwen3:8b (ollama) | $0 |
+| local | Compsognathus | qwen3.5-9b (LM Studio) | $0 |
 | flash | Triceratops | DeepSeek v4-flash | ~$0.14/M |
 | pro | Tyrannosaurus Rex | DeepSeek v4-pro | ~$0.43/M |
 | frontier | Indominus Rex | Claude sonnet-5 (Pro sub) | sub |
