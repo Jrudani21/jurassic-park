@@ -1,5 +1,5 @@
 window.FLEET_DATA = {
- "generated_at": "2026-09-14T12:22:52",
+ "generated_at": "2026-09-15T19:39:56",
  "fleets": [
   {
    "id": "ops",
@@ -421,11 +421,11 @@ window.FLEET_DATA = {
    "schedule": "manual",
    "agent_dir": "09-resume-parser-agent",
    "agent_args": "--resume \"<local-path>\"",
-   "model": "qwen3:8b",
+   "model": "qwen/qwen3.5-9b",
    "tier": "local",
    "env": {
-    "DEEPSEEK_API_BASE": "http://localhost:11434/v1",
-    "DEEPSEEK_MODEL": "qwen3:8b"
+    "DEEPSEEK_API_BASE": "http://127.0.0.1:1234/v1",
+    "DEEPSEEK_MODEL": "qwen/qwen3.5-9b"
    },
    "capabilities": [
     "career-ops",
@@ -488,11 +488,11 @@ window.FLEET_DATA = {
    "schedule": "manual",
    "agent_dir": "14-social-media-agent",
    "agent_args": "",
-   "model": "qwen3:8b",
+   "model": "qwen/qwen3.5-9b",
    "tier": "local",
    "env": {
-    "DEEPSEEK_API_BASE": "http://localhost:11434/v1",
-    "DEEPSEEK_MODEL": "qwen3:8b"
+    "DEEPSEEK_API_BASE": "http://127.0.0.1:1234/v1",
+    "DEEPSEEK_MODEL": "qwen/qwen3.5-9b"
    },
    "capabilities": [
     "career-ops",
@@ -572,11 +572,11 @@ window.FLEET_DATA = {
    "schedule": "daily:07:00",
    "agent_dir": "06-news-summarizer-agent",
    "agent_args": "--topic \"artificial intelligence\" --count 5",
-   "model": "qwen3:8b",
+   "model": "qwen/qwen3.5-9b",
    "tier": "local",
    "env": {
-    "DEEPSEEK_API_BASE": "http://localhost:11434/v1",
-    "DEEPSEEK_MODEL": "qwen3:8b"
+    "DEEPSEEK_API_BASE": "http://127.0.0.1:1234/v1",
+    "DEEPSEEK_MODEL": "qwen/qwen3.5-9b"
    },
    "capabilities": [
     "news-summary"
@@ -729,11 +729,11 @@ window.FLEET_DATA = {
    "schedule": "manual",
    "agent_dir": "10-meeting-notes-agent",
    "agent_args": "",
-   "model": "qwen3:8b",
+   "model": "qwen/qwen3.5-9b",
    "tier": "local",
    "env": {
-    "DEEPSEEK_API_BASE": "http://localhost:11434/v1",
-    "DEEPSEEK_MODEL": "qwen3:8b"
+    "DEEPSEEK_API_BASE": "http://127.0.0.1:1234/v1",
+    "DEEPSEEK_MODEL": "qwen/qwen3.5-9b"
    },
    "capabilities": [
     "meeting-notes"
@@ -1183,6 +1183,402 @@ window.FLEET_DATA = {
    "model": "qwen/qwen3-8b",
    "prompt_tokens": 14,
    "completion_tokens": 131,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T17:44:19.076182+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 13,
+   "completion_tokens": 189,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T17:45:14.143072+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 770,
+   "completion_tokens": 1200,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T17:45:44.237574+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 409,
+   "completion_tokens": 1151,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T17:46:06.465691+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 853,
+   "completion_tokens": 803,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T17:46:59.938407+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 416,
+   "completion_tokens": 758,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T17:47:22.293878+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 822,
+   "completion_tokens": 798,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T18:36:49.796303+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 17,
+   "completion_tokens": 217,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T18:37:03.742849+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 17,
+   "completion_tokens": 503,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T18:37:11.499276+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 18,
+   "completion_tokens": 230,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:28:45.500285+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 17,
+   "completion_tokens": 166,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:29:00.931482+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 17,
+   "completion_tokens": 512,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:29:09.468796+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 18,
+   "completion_tokens": 230,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:44:11.603180+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "prompt_tokens": 32,
+   "completion_tokens": 227,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:44:59.934646+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "prompt_tokens": 25,
+   "completion_tokens": 197,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:45:25.412489+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "prompt_tokens": 25,
+   "completion_tokens": 200,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:45:37.519471+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "prompt_tokens": 26,
+   "completion_tokens": 129,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:45:47.878896+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+   "prompt_tokens": 28,
+   "completion_tokens": 182,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:46:18.490359+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 24,
+   "completion_tokens": 1017,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:46:25.267781+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 17,
+   "completion_tokens": 163,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:46:41.667702+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 17,
+   "completion_tokens": 524,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:46:49.859715+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3-8b",
+   "prompt_tokens": 18,
+   "completion_tokens": 236,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:48:34.318209+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3-super-120b-a12b",
+   "prompt_tokens": 32,
+   "completion_tokens": 68,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:48:35.140954+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3-super-120b-a12b",
+   "prompt_tokens": 25,
+   "completion_tokens": 27,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:48:36.105100+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3-super-120b-a12b",
+   "prompt_tokens": 25,
+   "completion_tokens": 41,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:48:38.161751+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3-super-120b-a12b",
+   "prompt_tokens": 26,
+   "completion_tokens": 25,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:48:39.322102+00:00",
+   "tier": "nvidia",
+   "model": "nvidia/nemotron-3-super-120b-a12b",
+   "prompt_tokens": 28,
+   "completion_tokens": 39,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:50:15.708053+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 26,
+   "completion_tokens": 362,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:50:22.049272+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 19,
+   "completion_tokens": 151,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:50:36.213935+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 19,
+   "completion_tokens": 348,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:50:43.169854+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 20,
+   "completion_tokens": 165,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T19:50:58.425819+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 22,
+   "completion_tokens": 371,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T20:01:08.041250+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 26,
+   "completion_tokens": 406,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T20:01:14.317261+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 19,
+   "completion_tokens": 151,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T20:01:23.254018+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 19,
+   "completion_tokens": 221,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T20:01:29.412252+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 20,
+   "completion_tokens": 149,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "caller": ""
+  },
+  {
+   "ts": "2026-09-14T20:01:37.589812+00:00",
+   "tier": "local",
+   "model": "qwen/qwen3.5-9b",
+   "prompt_tokens": 22,
+   "completion_tokens": 201,
    "cache_hit_tokens": 0,
    "peak": false,
    "est_cost_usd": 0.0,
