@@ -30,10 +30,9 @@ two end-to-end smoke runs, failover check). Those commands need `<repo>/.venv`, 
   `tier_of()`, `_FALLBACK` ordering, `cache.exact_key()`, `cost.estimate_cost()` / `is_peak()`,
   `supervisor.check()`, `breaker.CircuitBreaker` state transitions,
   `prompts.dynamic_tail()`, `generate_site.scrub()`.
-- `agents/06-news-summarizer-agent/agent.py::fetch_news()` returns **three invented articles**
-  ("Return mock data if no API key") when `NEWS_API_KEY` is unset, and the agent then
-  summarises them as news. This contradicts the fleet's "never fabricate" rule
-  (`data_collector.py` docstring) and would not be caught without a test.
+- `agents/06-news-summarizer-agent/agent.py::fetch_news()` used to return three invented
+  articles when `NEWS_API_KEY` was unset. Fixed in e4a637d: it now returns `[]` and `main()`
+  exits without summarising. There is still no automated test for this path.
 - The documented local tier in `GUIDE_LOCAL.md` (Ollama `qwen3:8b`) no longer matches the code
   (LM Studio `qwen/qwen3.5-9b`), so following the guide's `--env` example targets a retired
   server.
