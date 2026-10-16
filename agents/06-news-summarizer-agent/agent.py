@@ -26,12 +26,9 @@ NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 
 def fetch_news(topic: str, count: int = 5) -> list[dict]:
     if not NEWS_API_KEY:
-        # Return mock data if no API key
-        return [
-            {"title": f"Major development in {topic}", "description": f"Researchers announce breakthrough in {topic} field.", "url": "https://example.com/1", "source": {"name": "Tech News"}},
-            {"title": f"{topic.title()} industry sees rapid growth", "description": f"New report shows {topic} adoption up 40% year-over-year.", "url": "https://example.com/2", "source": {"name": "Business Daily"}},
-            {"title": f"Experts weigh in on {topic} challenges", "description": f"Leading experts discuss obstacles facing the {topic} space.", "url": "https://example.com/3", "source": {"name": "Science Weekly"}},
-        ]
+        # No key -> no articles. Never invent news.
+        print("NEWS_API_KEY not set - news unavailable", file=sys.stderr)
+        return []
 
     url = f"https://newsapi.org/v2/everything?q={topic}&language=en&pageSize={count}&sortBy=publishedAt&apiKey={NEWS_API_KEY}"
     response = requests.get(url, timeout=10)
@@ -66,6 +63,9 @@ def main():
     print(f"\n📰 Fetching news about: {args.topic}\n")
     articles = fetch_news(args.topic, args.count)
     print(f"✅ Found {len(articles)} articles")
+    if not articles:
+        print("No articles available - skipping summary.")
+        return
 
     summary = summarize_news(args.topic, articles)
 
