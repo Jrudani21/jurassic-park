@@ -26,3 +26,23 @@ for name, (raw, ph) in cases.items():
 for name, generic in g.PRIVATE_REPOS:
     assert g.scrub("x " + name + " y") == "x " + generic + " y", name
 print("OK", len(cases), "path cases +", len(g.PRIVATE_REPOS), "repo names")
+
+# spaces/apostrophes in folder names, git-bash user paths, spaced project folder (fake names only)
+space_cases = {
+    "home-space-apos": (r"C:\Users\Jane's Box\AppData\x.json", "<user-home>", ("Jane", "Box", "AppData")),
+    "home-space": (r"C:\Users\Some One\AppData\x.json", "<user-home>", ("Some", "One", "AppData")),
+    "gitbash-home": ("/c/Users/Jane's Box/AppData/x.json", "<user-home>", ("Jane", "Box", "AppData")),
+    "gitbash-local": ("/e/Local/projects/x/y.json", "<local-path>", ("Local", "projects")),
+    "spaced-project": (r"E:\Local\projects\my dir\f", "<local-path>", ("my", "dir", "projects", "Local")),
+}
+for k, (raw, ph, bad) in list(space_cases.items()):
+    for label, r in ((k, raw), (k + "-json", json.dumps(raw)[1:-1])):
+        out = g.scrub('{"p": "%s", "q": "ok"}' % r)
+        assert ph in out, (label, out)
+        assert not any(x in out for x in bad), (label, out)
+        if label.endswith("-json"):
+            json.loads(out)
+        assert '"q": "ok"' in out, (label, out)
+    rt = g.scrub(json.dumps({"p": raw, "q": "ok"}))
+    assert json.loads(rt)["q"] == "ok" and ph in rt, (k, rt)
+print("OK", len(space_cases), "space/git-bash cases")

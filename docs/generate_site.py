@@ -37,9 +37,14 @@ def scrub(text):
     # doubled backslashes. The tail swallows backslash runs but stops before one
     # that precedes a quote or whitespace (escaped-quote boundary), so JSON stays valid.
     tail = r"(?:[^\"\\\s,)]|\\+(?=[^\"\\\s,)]))*"
-    text = re.sub(r"E:[\\/]+Local" + tail, "<local-path>", text)
-    text = re.sub(r"C:[\\/]+Users" + tail, "<user-home>", text)
-    text = re.sub(r"/[ec]/+[Ll]ocal" + tail, "<local-path>", text)
+    # The user-home / project-folder segment may hold spaces and apostrophes: take any run that is not a separator or quote.
+    seg = r"[\\/]+[^\\/\"\r\n]+"
+    proj = r"(?:[\\/]+projects" + seg + r")?"
+    home = r"(?:" + seg + r")?"
+    text = re.sub(r"E:[\\/]+Local" + proj + tail, "<local-path>", text)
+    text = re.sub(r"C:[\\/]+Users" + home + tail, "<user-home>", text)
+    text = re.sub(r"/e/+[Ll]ocal" + proj + tail, "<local-path>", text)
+    text = re.sub(r"/c/+Users" + home + tail, "<user-home>", text)
     for name, generic in PRIVATE_REPOS:
         text = text.replace(name, generic)
     return text
