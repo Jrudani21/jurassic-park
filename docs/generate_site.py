@@ -37,14 +37,16 @@ def scrub(text):
     # doubled backslashes. The tail swallows backslash runs but stops before one
     # that precedes a quote or whitespace (escaped-quote boundary), so JSON stays valid.
     tail = r"(?:[^\"\\\s,)]|\\+(?=[^\"\\\s,)]))*"
-    # The user-home / project-folder segment may hold spaces and apostrophes: take any run that is not a separator or quote.
-    seg = r"[\\/]+[^\\/\"\r\n]+"
-    proj = r"(?:[\\/]+projects" + seg + r")?"
-    home = r"(?:" + seg + r")?"
-    text = re.sub(r"E:[\\/]+Local" + proj + tail, "<local-path>", text)
-    text = re.sub(r"C:[\\/]+Users" + home + tail, "<user-home>", text)
-    text = re.sub(r"/e/+[Ll]ocal" + proj + tail, "<local-path>", text)
-    text = re.sub(r"/c/+Users" + home + tail, "<user-home>", text)
+    # The user-home / project-folder segment may hold spaces and apostrophes (max 64 chars), but stops at a
+    # separator, quote, sentence punctuation, or the start of another path. The tail only continues after a separator.
+    seg = r"[\\/]+(?:(?![A-Za-z]:[\\/]|/[a-z]/(?:Users|Local))[^\\/\"\r\n,;:()!?*<>|]){1,64}(?<=\S)"
+    rest = r"(?:[\\/]+(?=[^\"\\\s,)])" + tail + r")?"
+    proj = r"(?:[\\/]+projects" + seg + r")?" + rest
+    home = r"(?:" + seg + r")?" + rest
+    text = re.sub(r"E:[\\/]+Local" + proj, "<local-path>", text)
+    text = re.sub(r"C:[\\/]+Users" + home, "<user-home>", text)
+    text = re.sub(r"/e/+[Ll]ocal" + proj, "<local-path>", text)
+    text = re.sub(r"/c/+Users" + home, "<user-home>", text)
     for name, generic in PRIVATE_REPOS:
         text = text.replace(name, generic)
     return text

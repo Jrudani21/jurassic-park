@@ -46,3 +46,28 @@ for k, (raw, ph, bad) in list(space_cases.items()):
     rt = g.scrub(json.dumps({"p": raw, "q": "ok"}))
     assert json.loads(rt)["q"] == "ok" and ph in rt, (k, rt)
 print("OK", len(space_cases), "space/git-bash cases")
+
+# two paths in one string, sentence boundaries, long runs (fake names only)
+multi = [
+    (r"log: C:\Users\Jane Doe went home, bye. Then C:\Users\Jane Doe\x", ("Doe", "Jane"), 2),
+    (r"C:\Users\Jane Doe and C:\Users\Bob Roe", ("Doe", "Roe", "Jane", "Bob"), 2),
+    (r"see (C:\Users\Jane Doe) now", ("Doe", "Jane"), 1),
+    (r"seen C:\Users\Jane Doe, then more", ("Doe", "Jane"), 1),
+]
+for raw, bad, n in multi:
+    for label, r in (("raw", raw), ("json", json.dumps(raw)[1:-1])):
+        out = g.scrub(r)
+        assert out.count("<user-home>") == n, (label, out)
+        assert not any(x in out for x in bad), (label, out)
+    json.loads(g.scrub(json.dumps({"p": raw})))
+long_raw = r"open C:\Users\Jane Doe " + "and then a long sentence that goes on " * 3 + "ENDMARK"
+assert "ENDMARK" in g.scrub(long_raw) and "<user-home>" in g.scrub(long_raw)
+nxt = g.scrub(r"open C:\Users\Jane Doe and more" + "\nnext line")
+assert "next line" in nxt and "Doe" not in nxt, nxt
+import random
+rnd = random.Random(1)
+bits = ["Jane", "Doe", "Bob's", "x", "a b", ",", ")", " and ", "C:\\Users\\", "E:\\Local\\projects\\", "/c/Users/", "/e/Local/", "\\", "/", '"', "\n", " ", "q"]
+for _ in range(3000):
+    s = "".join(rnd.choice(bits) for _ in range(rnd.randint(1, 14)))
+    json.loads(g.scrub(json.dumps({"p": s, "q": "ok"})))
+print("OK multi-path/sentence/fuzz")
