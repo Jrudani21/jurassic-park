@@ -133,17 +133,18 @@ def main():
                 if "\u2014" in f.read():
                     print(f"WARN em-dash found in {name}")
 
-    # commit + push (only if data changed or --force)
+    # commit + push (only if data changed or --force); stage only generated site files so stray docs never auto-publish
+    SITE_PATHS = ["data.js", "index.html", "analytics.html", "teams.html", "process.html", "runbook.html", "images/"]
     force = "--force" in sys.argv
     if force:
-        subprocess.run(["git", "add", "-A"], cwd=REPO, check=True)
+        subprocess.run(["git", "add", "--"] + SITE_PATHS, cwd=REPO, check=True)
         subprocess.run(["git", "commit", "-m", "nightly site refresh", "--allow-empty"], cwd=REPO, check=True)
         subprocess.run(["git", "push"], cwd=REPO, check=True)
         print("pushed (force)")
     else:
-        r = subprocess.run(["git", "status", "--porcelain"], cwd=REPO, capture_output=True, text=True)
+        r = subprocess.run(["git", "status", "--porcelain", "--"] + SITE_PATHS, cwd=REPO, capture_output=True, text=True)
         if r.stdout.strip():
-            subprocess.run(["git", "add", "-A"], cwd=REPO, check=True)
+            subprocess.run(["git", "add", "--"] + SITE_PATHS, cwd=REPO, check=True)
             subprocess.run(["git", "commit", "-m", f"site refresh {datetime.date.today()}"], cwd=REPO, check=True)
             subprocess.run(["git", "push"], cwd=REPO, check=True)
             print("pushed changes")
