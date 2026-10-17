@@ -29,3 +29,4 @@ relocate-to-ext4.sh
 finish-migration.sh
 scripts/bench-draft.sh
 docs/*.visual-check.*
+*-audit.md
