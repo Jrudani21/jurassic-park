@@ -223,8 +223,8 @@ const ISSUES = [
    root:"Effective 16:00 UTC Aug 16 2026. Peak = UTC 01:00-04:00 & 06:00-10:00 (2x off-peak). flash: off-peak $0.22/M in / $0.66/M out, peak $0.44/$1.32. pro: off-peak $0.66/$1.98, peak $1.32/$3.96. Cache-hit ~30x cheaper.",
    fix:"Heavy/burst work in off-peak; time_sensitive: true only for live-money bots (the weather-arbitrage bot, market-watch).",
    res:"Already flagged 2026-08-13; scheduling stays off-peak." },
-{ n:7, title:"Hermes venv leaks into the weather-arbitrage bot (pydantic crash)", sig:"venv_leak",
-   root:"Hermes injects its py3.11 venv via PYTHONPATH; the weather-arbitrage bot needs py3.12 (system or repo .venv).",
+{ n:7, title:"Ken venv leaks into the weather-arbitrage bot (pydantic crash)", sig:"venv_leak",
+   root:"Ken injects its py3.11 venv via PYTHONPATH; the weather-arbitrage bot needs py3.12 (system or repo .venv).",
    fix:"env -u PYTHONPATH -u VIRTUAL_ENV -u PYTHONHOME <py312>..., or use the repo's own .venv python. env -u PYTHONPATH ALONE is NOT enough.",
    res:"The cron launcher already does this." },
 ];
