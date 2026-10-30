@@ -211,6 +211,8 @@ def _chat_for_escalation(tier: str, messages: list[dict]) -> tuple[str, str]:
         brk = breaker.breaker_for(t)
         if not brk.allow():
             continue
+        if cost_mod.over_ceiling(t):  # daily spend ceiling: skip metered tiers, local is last
+            continue
         try:
             if t == "frontier":
                 return _chat_frontier(messages, 0.2, 1024), t
@@ -314,6 +316,8 @@ def chat(tier: str = "flash", messages: list | None = None, system: str | None =
         # a down provider shouldn't eat timeouts from 30 agents in parallel).
         brk = breaker.breaker_for(t)
         if not brk.allow():
+            continue
+        if cost_mod.over_ceiling(t):  # daily spend ceiling: skip metered tiers, local is last
             continue
         try:
             if t == "frontier":

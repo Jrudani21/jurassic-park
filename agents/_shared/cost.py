@@ -117,6 +117,36 @@ def cache_hit_rate(days: int = 7) -> dict:
         return {"prompt_tokens": 0, "cache_hit_tokens": 0, "hit_rate": 0.0}
 
 
+# Daily spend ceiling (UTC day) for the metered tiers. At the ceiling llm.chat()
+# skips these and fails over to the free/local tiers, so a call still answers.
+# Ken core has its own separate ceiling (agent.cost_ceiling_usd_daily).
+DAILY_CEILING_USD = 1.00
+PAID_TIERS = ("flash", "pro")  # frontier is a flat subscription, $0 in the ledger
+
+
+def spent_today() -> float:
+    """USD logged so far today (UTC). Never raises; a bad ledger reads as 0.0."""
+    try:
+        today = datetime.now(timezone.utc).date().isoformat()
+        total = 0.0
+        if LEDGER.exists():
+            for line in LEDGER.read_text(encoding="utf-8").splitlines():
+                try:
+                    e = json.loads(line)
+                except Exception:
+                    continue
+                if str(e.get("ts", ""))[:10] == today:
+                    total += float(e.get("est_cost_usd", 0) or 0)
+        return total
+    except Exception:
+        return 0.0
+
+
+def over_ceiling(tier: str) -> bool:
+    """True when `tier` is metered and today's spend has reached the ceiling."""
+    return tier in PAID_TIERS and spent_today() >= DAILY_CEILING_USD
+
+
 if __name__ == "__main__":
     # Self-test: window classification + rate math (no network).
     for h, expect in [(0, False), (2, True), (5, False), (8, True), (12, False)]:
@@ -131,4 +161,19 @@ if __name__ == "__main__":
     hit = estimate_cost("deepseek-v4-pro", 1_000_000, 0, cache_hit_tokens=1_000_000,
                         dt=datetime(2026, 8, 16, 12, tzinfo=timezone.utc))
     assert abs(hit - 0.66 / 30) < 1e-6, hit
-    print("cost.py self-test OK: peak windows, off-peak/peak rates, cache-hit discount")
+    # Ceiling: only today's rows count, only metered tiers are skipped.
+    import tempfile
+    _old, LEDGER = LEDGER, Path(tempfile.mkdtemp()) / "ledger.jsonl"
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        old = (datetime.now(timezone.utc) - timedelta(days=2)).isoformat()
+        LEDGER.write_text(json.dumps({"ts": old, "est_cost_usd": 50}) + chr(10)
+                          + json.dumps({"ts": now, "est_cost_usd": DAILY_CEILING_USD - 0.01}) + chr(10))
+        assert not over_ceiling("flash"), "under ceiling must not skip"
+        with LEDGER.open("a") as f:
+            f.write(json.dumps({"ts": now, "est_cost_usd": 0.01}) + chr(10))
+        assert over_ceiling("flash") and over_ceiling("pro"), "at ceiling must skip metered tiers"
+        assert not over_ceiling("local") and not over_ceiling("frontier"), "free/sub tiers never skipped"
+    finally:
+        LEDGER = _old
+    print("cost.py self-test OK: peak windows, off-peak/peak rates, cache-hit discount, daily ceiling")
