@@ -465,7 +465,7 @@ def _hermes_bin() -> str:
     if found:
         return found
     fallback = os.path.join(
-        os.getenv("KEN_REPO", r"E:\Local\projects\ken-agent"),
+        os.getenv("KEN_REPO", os.path.expanduser("~/ken-agent")),
         ".venv", "Scripts", "hermes.exe")
     return fallback if os.path.exists(fallback) else "hermes"
 
@@ -476,7 +476,7 @@ def _chat_frontier_hermes(model: str, prompt: str, direct_err: Exception) -> str
     # The CLI reads its credential pool from HERMES_HOME; without it a shell
     # that lacks the var falls back to a different (or empty) auth store.
     env = dict(os.environ)
-    env.setdefault("HERMES_HOME", os.getenv("KEN_HOME", r"E:\Local\ken-home"))
+    env.setdefault("HERMES_HOME", os.getenv("KEN_HOME", os.path.expanduser("~/.ken-home")))
     proc = subprocess.run(
         cmd, capture_output=True, text=True, encoding="utf-8", env=env,
         errors="replace", timeout=600, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),

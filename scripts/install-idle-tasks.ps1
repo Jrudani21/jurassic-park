@@ -2,7 +2,7 @@
 #
 # Two tasks, because they solve two different problems:
 #
-#   ColibriAttachDisk  -- at logon, attaches E:\wsl-models.vhdx to WSL. A
+#   ColibriAttachDisk  -- at logon, attaches the model VHD to WSL. A
 #                         `wsl --mount` attachment does not survive the WSL VM
 #                         stopping (which WSL does on its own idle timeout), and
 #                         re-attaching needs administrator rights. Running this
@@ -21,9 +21,9 @@
 
 $ErrorActionPreference = 'Stop'
 
-$ScriptDir  = 'E:\Local\projects\jurassic-park\scripts'
+$ScriptDir  = $PSScriptRoot
 $RunnerPath = Join-Path $ScriptDir 'colibri-idle-runner.ps1'
-$ModelVhd   = 'E:\wsl-models.vhdx'
+$ModelVhd   = $env:COLIBRI_MODEL_VHD
 $User       = "$env:USERDOMAIN\$env:USERNAME"
 
 if (-not (Test-Path $RunnerPath)) {

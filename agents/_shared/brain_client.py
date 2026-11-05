@@ -7,7 +7,7 @@ Cache-first: callers should pass the SAME `query` for the same bot kind each
 run so the RAG prefix stays stable and DeepSeek prefix-cache hits.
 
 Sources indexed on demand (lazy, cached per process): every .md under
-E:\\Local\\brain (vault), plus uploaded-doc style entries if the assistant's
+the brain vault directory, plus uploaded-doc style entries if the assistant's
 embeddings.json exists. Re-sync is cheap (content-hash skip).
 """
 from __future__ import annotations
