@@ -41,7 +41,7 @@ python docs/generate_site.py --force   # always push
 
 ## Run in Docker
 
-One image runs any agent; provider keys come from a `.env` file (see `ROUTING.md`).
+One image runs the agents that need only the shared client (`openai` + `requests`); agent 01 is the one tested. Agents that import `dotenv`, LangChain, pandas, CrewAI or LlamaIndex need their own `requirements.txt` installed first. Provider keys come from a `.env` file (see `ROUTING.md`). Compose 2.24 or newer is required.
 
 ```bash
 docker build -t jurassic-park .
@@ -51,7 +51,7 @@ docker compose run --rm agent agents/01-web-research-agent/agent.py --query "top
 ```
 
 The agent run needs at least one provider key; without one it stops with `ALL_TIERS_FAILED`.
-The container runs as a non-root user and keeps the cost ledger and cache in the `fleet-data` volume.
+The container runs as a non-root user and keeps the cost ledger and LLM response cache in the `fleet-data` volume. The tool cache is not persisted.
 
 ## License
 
