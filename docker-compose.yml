@@ -1,0 +1,21 @@
+# docker compose up dashboard            -> live dashboard on http://localhost:8080
+# docker compose run --rm agent agents/01-web-research-agent/agent.py --query "topic"
+services:
+  agent:
+    build: .
+    image: jurassic-park
+    env_file:
+      - path: .env        # optional: provider keys (see ROUTING.md); self-test runs without it
+        required: false
+    volumes:
+      - fleet-data:/app/data
+
+  dashboard:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docs:/usr/share/nginx/html:ro
+
+volumes:
+  fleet-data:

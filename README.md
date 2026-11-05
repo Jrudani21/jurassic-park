@@ -39,6 +39,20 @@ python docs/generate_site.py        # refresh + push only if data changed
 python docs/generate_site.py --force   # always push
 ```
 
+## Run in Docker
+
+One image runs any agent; provider keys come from a `.env` file (see `ROUTING.md`).
+
+```bash
+docker build -t jurassic-park .
+docker run --rm jurassic-park                      # self-test, needs no keys
+docker compose up dashboard                        # dashboard at http://localhost:8080
+docker compose run --rm agent agents/01-web-research-agent/agent.py --query "topic"
+```
+
+The agent run needs at least one provider key; without one it stops with `ALL_TIERS_FAILED`.
+The container runs as a non-root user and keeps the cost ledger and cache in the `fleet-data` volume.
+
 ## License
 
 MIT - this is **our own** build (not a fork). The fleet code, shared client, and site were
