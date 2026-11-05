@@ -26,8 +26,8 @@ param(
     [int]$YieldFreeMB    = 1500, # stop if free VRAM falls below this
     [int]$Port           = 8080,
     [string]$ModelDir    = '/models/mimo-v2.5',
-    [string]$ModelVhd    = 'E:\wsl-models.vhdx',
-    [string]$LogPath     = 'E:\Local\projects\jurassic-park\logs\colibri-idle.log'
+    [string]$ModelVhd    = $env:COLIBRI_MODEL_VHD,
+    [string]$LogPath     = (Join-Path $PSScriptRoot '..\logs\colibri-idle.log')
 )
 
 $ErrorActionPreference = 'Continue'

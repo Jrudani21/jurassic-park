@@ -293,11 +293,11 @@ optimism.
       167 GB of disk and hours of transfer to discover the binary doesn't build.
 - [ ] Build from source (`./setup.sh`, needs gcc/clang with OpenMP) or take the
       prebuilt Windows release; verify with `python3 coli info`.
-- [ ] Install to **E:**, not C:. Suggested: `E:\Local\models\colibri\`.
+- [ ] Install to **E:**, not C:. Suggested: `<MODELS_DIR>\colibri\`.
       After DSpark lands (155.4 GiB), E: drops from 232 GiB free to **~77 GiB**.
 - [ ] Fetch weights with `hf download` (resumable) rather than a browser — 46-48
       shards over a long transfer will hit at least one interruption:
-      `hf download deepseek-ai/DeepSeek-V4-Flash-DSpark --local-dir E:\Local\models\deepseek-v4-flash`
+      `hf download deepseek-ai/DeepSeek-V4-Flash-DSpark --local-dir <MODELS_DIR>\deepseek-v4-flash`
       `hf.exe` is already present in the Ken venv (`.venv/Scripts/hf.exe`).
 - [ ] Launch headless: `coli serve --model <path>`; record the port.
 - [ ] `ollama stop qwen3:8b` first — see §6(b).
@@ -344,13 +344,13 @@ Verified end to end tonight that Ken really can drive a local
 OpenAI-compatible endpoint, using the existing Ollama provider as the stand-in:
 
 ```
-HERMES_HOME=E:\Local\ken-home ./.venv/Scripts/hermes.exe \
+HERMES_HOME=<KEN_HOME> ./.venv/Scripts/hermes.exe \
     chat -q "Reply with exactly: ok" -Q -m "ollama-launch/qwen3:8b"
 ->  session_id: 20260819_073008_c719ab
     ok
 ```
 
-So the Colibri wiring is a config addition in `E:\Local\ken-home\config.yaml`,
+So the Colibri wiring is a config addition in `<KEN_HOME>\config.yaml`,
 mirroring the `ollama-launch` block already there:
 
 ```yaml
@@ -528,15 +528,15 @@ Phase 1 executed. Colibri v1.6.2 is installed; the model side is still in progre
 
 ### What went in
 
-- **Engine:** `E:\Local\colibri` — prebuilt `colibri-v1.6.2-windows-x86_64.zip`
+- **Engine:** `<COLIBRI_DIR>` — prebuilt `colibri-v1.6.2-windows-x86_64.zip`
   (2.9 MB). **SHA256 verified against the project's published `SHA256SUMS.txt`
   before unpacking** (`12d4cb059a8d…1043a1596`, matched). Built from source was
   not an option: no `gcc`, `clang`, `cl`, `make`, or `cmake` on this machine.
-- **Source checkout:** `E:\Local\colibri-src` — needed because the release ships
+- **Source checkout:** `<COLIBRI_SRC>` — needed because the release ships
   only `tools/k3_tokenizer.py`. The conversion tooling
   (`c/tools/convert_olmoe_merged.py`, `c/tools/convert_fp8_to_int4.py`,
   `c/tools/mirror_plan.py`) lives only in the repo.
-- **Conversion venv:** `E:\Local\colibri-src\.venv-convert` (torch 2.13.0+cpu,
+- **Conversion venv:** `<COLIBRI_SRC>\.venv-convert` (torch 2.13.0+cpu,
   safetensors 0.8.0, hub 1.28.0). Isolated deliberately — the system Python has
   torch 2.3.1, below the converter's `torch>=2.4` floor, and transformers had
   already auto-disabled it. Upgrading in place would have touched the
@@ -547,7 +547,7 @@ The release contains one engine binary per family: `colibri.exe` (GLM-5.2),
 
 ### Two corrections that would have cost debugging time
 
-Both are now fixed in the staged Ken block in `E:\Local\ken-home\config.yaml`.
+Both are now fixed in the staged Ken block in `<KEN_HOME>\config.yaml`.
 
 1. **The port is 8000, not 8080.** From `coli` v1.6.2: `coli serve` defaults to
    `--host 127.0.0.1 --port 8000`. The 8080 in the earlier draft was a guess and
@@ -695,7 +695,7 @@ so this is a defect or an unfinished path in the engine's DATA-frame emission,
 not a missing feature.
 
 **Consequence for Ken:** `display.streaming: true` is set in
-`E:\Local\ken-home\config.yaml`, and most OpenAI clients stream by default.
+`<KEN_HOME>\config.yaml`, and most OpenAI clients stream by default.
 Against this build Ken would receive **empty replies**. The staged provider block
 must disable streaming, or Colibri stays unusable from Ken regardless of speed.
 
@@ -789,12 +789,12 @@ that cannot see it.
 Both cost real time and produce no useful diagnostics.
 
 - **nvcc dies silently on an apostrophe in TEMP.** The Windows username here is
-  `Janak's PC`, so `TEMP` contains `'`. nvcc exits 1 with zero output — no error
+  `<windows user name>`, so `TEMP` contains `'`. nvcc exits 1 with zero output — no error
   text at all. Every sub-tool (cicc, cudafe++, ptxas) works when invoked
   directly, which sends you looking in the wrong place. Fix: point `TEMP`/`TMP`
   at a clean path such as `E:\nvcc_tmp`.
 - **MinGW's ld.exe splits paths at the same apostrophe**, trying to resolve
-  `C:/Users/Janak's` and `PC/AppData/...` as two separate directories. Fix:
+  `C:/Users/<first part of name>` and `PC/AppData/...` as two separate directories. Fix:
   copy the MinGW tree to `C:\mingw64`.
 
 Also: CUDA 13.3's nvcc crashes against VS 2025 (v18 / MSVC 19.51), and
@@ -819,7 +819,7 @@ disk budget — has no GPU path without upstream work.
 
 The Windows GPU build was completed and verified regardless:
 `colibri.exe` (1,038,427 bytes, `CUDA_DLL=1`) and `coli_cuda.dll` (602,624
-bytes, sm_89) in `E:\Local\colibri\`, with the CPU-only original preserved as
+bytes, sm_89) in `<COLIBRI_DIR>\`, with the CPU-only original preserved as
 `colibri.exe.cpu-only-backup`. A standalone loader test confirmed the DLL
 resolves its exports and `coli_cuda_init` returns 1 against the RTX 4060.
 
@@ -981,7 +981,7 @@ Container note: Ken's `hermes-*` sandboxes are ephemeral `sleep infinity`
 holders on `ken-terminal:latest`. Some are removed outright when stopped rather
 than left in an exited state, so "restart the containers you stopped" is not
 reliable advice — check `docker ps -a` for what actually survived. All their
-state is in `E:\Local\ken-home\*` bind mounts and is unaffected either way.
+state is in `<KEN_HOME>\*` bind mounts and is unaffected either way.
 
 ### 10.5 Viability, revised
 
