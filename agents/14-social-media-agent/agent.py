@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/14-social-media-agent/agent.py d8463c4609c135e6
 """
 Social Media Content Agent using CrewAI.
 

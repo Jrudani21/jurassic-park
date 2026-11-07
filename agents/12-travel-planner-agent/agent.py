@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/12-travel-planner-agent/agent.py ba0d5fdf3623db52
 """
 Travel Planner Agent using CrewAI.
 

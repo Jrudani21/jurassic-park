@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/02-code-review-agent/agent.py 4b3b0e34a9ed312a
 """
 Code Review Agent using LangChain.
 

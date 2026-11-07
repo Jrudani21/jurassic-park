@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/llm.py ae8b7b2b4f31b651
 """Shared tiered LLM client — the standard for ALL agents in this repo.
 
 Rule-based hybrid routing (see ROUTING.md in this repo root):

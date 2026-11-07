@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/docs/selftest_scrub.py 589fb0377022ebf6
 """Self-check for scrub(). Run: python selftest_scrub.py  (does not run the generator)."""
 import json, os, sys
 for v in ("FLEET_SITE_DIR", "FLEET_BOTS_JSON", "FLEET_LEDGER", "FLEET_CACHE_DB", "FLEET_STATE"):

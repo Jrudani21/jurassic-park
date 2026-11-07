@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/07-github-issue-triager/agent.py f2f026721bda500a
 """
 GitHub Issue Triager using LangGraph.
 

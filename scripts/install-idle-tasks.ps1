@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/scripts/install-idle-tasks.ps1 31cc18fab28280b3
 # Registers the scheduled tasks that make the Colibri batch tier self-managing.
 #
 # Two tasks, because they solve two different problems:

@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/22-vault-rag-agent/agent.py 132703ace0d7a551
 """Vault RAG Agent — ask questions over the Obsidian brain vault (local).
 
 Lean RAG on purpose: local Ollama embeddings (nomic-embed-text — ZERO tokens,

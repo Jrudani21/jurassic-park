@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/20-multi-agent-debate/agent.py 28f0d7ddd03a1993
 """
 Multi-Agent Debate System using AutoGen-style orchestration.
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/brain_client.py ded18e2114ec87da
 """Brain-as-context-service: local retrieval from the Obsidian vault for the
 agent fleet. Zero new deps — Ollama via OpenAI-compatible endpoint + pure
 Python BM25. Logic mirrors the assistant app's rag.py but is

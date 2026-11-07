@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/supervisor.py c09928d28d17d1a1
 """Supervisor for low-parameter/free-tier LLM outputs (_shared/llm.py).
 
 The problem: local (qwen3:8b), Bluesminds (llama-3.1-70b), OpenRouter

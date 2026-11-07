@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/09-resume-parser-agent/agent.py 545df5901bf70a62
 """
 Resume Parser Agent using LangChain.
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/17-recipe-agent/agent.py 9897e28ed33dca84
 """
 Recipe Recommendation Agent using Agno-style single agent.
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/10-meeting-notes-agent/agent.py 02a95c3ea252f5ee
 """
 Meeting Notes Agent.
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/04-sql-query-agent/agent.py 333a46062381098a
 """
 SQL Query Agent using LangChain.
 

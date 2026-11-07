@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/scripts/eval_tiers.py 38594a0d40416e17
 """Eval harness: run a fixed question set through each of the 7 LLM tiers,
 score correctness (keyword match) and latency. No fallback per tier — patches
 llm._FALLBACK so tier=X hits only X, not X's whole chain.
