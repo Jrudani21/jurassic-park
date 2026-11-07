@@ -13,9 +13,6 @@ Usage:
 """
 
 import argparse
-import json
-import os
-import re
 import sys
 from pathlib import Path
 
@@ -49,17 +46,6 @@ suggest 3 recipes. Return JSON:
 Return only valid JSON."""
 
 
-def parse_json_response(text: str) -> dict:
-    cleaned = text.strip()
-    if cleaned.startswith("```"):
-        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-        cleaned = re.sub(r"\s*```$", "", cleaned)
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    if match:
-        cleaned = match.group(0)
-    return json.loads(cleaned)
-
-
 def get_recipes(ingredients: list[str], diet: str, time_limit: int, servings: int) -> dict:
     constraints = []
     if diet:
@@ -75,7 +61,7 @@ def get_recipes(ingredients: list[str], diet: str, time_limit: int, servings: in
         system=RECIPE_PROMPT,
         temperature=0.5,
     )
-    return parse_json_response(content)
+    return shared_llm.parse_json_response(content)
 
 
 def display_recipe(recipe: dict):

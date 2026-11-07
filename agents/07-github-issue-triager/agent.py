@@ -14,7 +14,6 @@ Usage:
 
 import argparse
 import os
-import json
 import re
 import sys
 from pathlib import Path
@@ -41,17 +40,6 @@ TRIAGE_PROMPT = """You are a GitHub issue triager. Analyze the issue and return 
 Return only valid JSON, no markdown."""
 
 
-def parse_json_response(text: str) -> dict:
-    cleaned = text.strip()
-    if cleaned.startswith("```"):
-        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-        cleaned = re.sub(r"\s*```$", "", cleaned)
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    if match:
-        cleaned = match.group(0)
-    return json.loads(cleaned)
-
-
 def triage_issue(title: str, body: str, labels: list[str] = None) -> dict:
     issue_text = f"Title: {title}\n\nBody:\n{body}"
     if labels:
@@ -63,12 +51,11 @@ def triage_issue(title: str, body: str, labels: list[str] = None) -> dict:
         system=TRIAGE_PROMPT,
         temperature=0,
     )
-    return parse_json_response(content)
+    return shared_llm.parse_json_response(content)
 
 
 def fetch_github_issue(url: str) -> tuple[str, str, list]:
     """Fetch issue details from GitHub API."""
-    import re
     import requests
 
     match = re.match(r"https://github.com/([^/]+)/([^/]+)/issues/(\d+)", url)

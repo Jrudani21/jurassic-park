@@ -15,8 +15,6 @@ Usage:
 
 import argparse
 import json
-import os
-import re
 import sys
 from pathlib import Path
 
@@ -63,17 +61,6 @@ FIT_PROMPT = """Given this candidate profile and job description, return JSON:
 Return only valid JSON."""
 
 
-def parse_json_response(text: str) -> dict:
-    cleaned = text.strip()
-    if cleaned.startswith("```"):
-        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-        cleaned = re.sub(r"\s*```$", "", cleaned)
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    if match:
-        cleaned = match.group(0)
-    return json.loads(cleaned)
-
-
 def read_resume_text(path: str) -> str:
     if path.endswith(".pdf"):
         try:
@@ -95,7 +82,7 @@ def parse_resume(text: str) -> dict:
         system=PARSE_PROMPT,
         temperature=0,
     )
-    return parse_json_response(content)
+    return shared_llm.parse_json_response(content)
 
 
 def score_fit(profile: dict, job_desc: str) -> dict:
@@ -105,7 +92,7 @@ def score_fit(profile: dict, job_desc: str) -> dict:
         system=FIT_PROMPT,
         temperature=0,
     )
-    return parse_json_response(content)
+    return shared_llm.parse_json_response(content)
 
 
 SAMPLE_RESUME = """

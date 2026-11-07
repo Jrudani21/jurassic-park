@@ -24,7 +24,9 @@ Usage:
     client = get_client("local")          # OpenAI-compatible, for langchain/llama_index/crewai
     tier = tier_of("extract")             # -> "local"
 """
+import json
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -521,9 +523,22 @@ def _clean_cli_output(out: str) -> str:
     return re.sub(r"\x1b\[[0-9;]*m", "", "\n".join(lines)).strip()
 
 
+def parse_json_response(text: str) -> dict:
+    """Parse a JSON object out of a model reply, tolerating a ```json fence and surrounding prose."""
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+    if match:
+        cleaned = match.group(0)
+    return json.loads(cleaned)
+
+
 if __name__ == "__main__":
     # Quick self-test: tier routing + a real zero-token local call.
     for kind in ["summarize", "template", "code", "analysis", "debate", "deep-analysis", ""]:
         print(f"  tier_of({kind!r:16}) -> {tier_of(kind)}")
     text, used = chat("local", "Reply with exactly: ok", max_tokens=8)
     print(f"  local chat -> {used}: {text.strip()!r}")
+
