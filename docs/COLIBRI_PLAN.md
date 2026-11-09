@@ -201,9 +201,9 @@ monthly saving from replacing it is therefore roughly four tenths of a cent,
 against $5-10/month of electricity for 24/7 inference.
 
 Caveat, stated plainly: this ledger starts 2026-08-13 and holds 26 calls, so
-it is a young sample and may not capture spend that flows through Hermes/Ken
-rather than through `_shared/llm.py`. I looked for a Hermes-side usage ledger
-under `~/.hermes` and `~/.ken` and found none. **Before Phase 1, pull the real
+it is a young sample and may not capture spend that flows through Ken
+rather than through `_shared/llm.py`. I looked for a Ken-side usage ledger
+under `~/.ken` and `~/.ken` and found none. **Before Phase 1, pull the real
 number from the DeepSeek billing dashboard.** If actual monthly spend really is
 $50-200, the ROI case is live and this section is wrong. If it is single-digit
 dollars, it is not.
@@ -344,7 +344,7 @@ Verified end to end tonight that Ken really can drive a local
 OpenAI-compatible endpoint, using the existing Ollama provider as the stand-in:
 
 ```
-HERMES_HOME=<KEN_HOME> ./.venv/Scripts/hermes.exe \
+KEN_HOME=<KEN_HOME> ./.venv/Scripts/ken.exe \
     chat -q "Reply with exactly: ok" -Q -m "ollama-launch/qwen3:8b"
 ->  session_id: 20260819_073008_c719ab
     ok
@@ -371,8 +371,8 @@ Two cautions specific to Ken:
   `extra_body.think=False` for that case. At sub-1 tok/s an unbounded thinking
   budget is the difference between a two-minute reply and a twenty-minute one.
 
-Note while in there: the fork still ships the binary as `hermes.exe` and reads
-`HERMES_HOME`, so the rebrand is still incomplete on the CLI entrypoint.
+Note while in there: the fork still ships the binary as `ken.exe` and reads
+`KEN_HOME`, so the rebrand is still incomplete on the CLI entrypoint.
 
 ### Phase 4 — decide
 - [ ] Compare Phase 2 numbers against the free tiers already wired up.
@@ -888,7 +888,7 @@ shard so peak overhead stays near one shard rather than a second full copy.
 
 Secondary: WSL is capped at 15 GB of the host's 32 GB. Raising it grows the
 expert cache directly, but `wsl --shutdown` would kill the running
-`hermes-*` and `n8n` containers, so it waits for an idle Docker window.
+`ken-*` and `n8n` containers, so it waits for an idle Docker window.
 
 ### 9.8 Viability
 
@@ -977,7 +977,7 @@ Result here: 144.2 GB → 13.4 GB, **130.8 GB reclaimed**, C: back to 156.8 GB.
 `fix-c-drive.ps1` does this end to end, with a diskpart fallback for hosts
 without the Hyper-V role, and re-attaches the model disk afterwards.
 
-Container note: Ken's `hermes-*` sandboxes are ephemeral `sleep infinity`
+Container note: Ken's `ken-*` sandboxes are ephemeral `sleep infinity`
 holders on `ken-terminal:latest`. Some are removed outright when stopped rather
 than left in an exited state, so "restart the containers you stopped" is not
 reliable advice — check `docker ps -a` for what actually survived. All their
@@ -1004,7 +1004,7 @@ replacement gates on a clock plus GPU contention instead.
 
 Three signals were tried and measured:
 
-- **Task Scheduler "On Idle"** — needs sustained sub-10% CPU. The fleet (hermes
+- **Task Scheduler "On Idle"** — needs sustained sub-10% CPU. The fleet (ken
   sandboxes, n8n, cron) prevents that indefinitely.
 - **`GetLastInputInfo`** — reported 2144s idle *while the user was actively
   working*. This host is headless, normally locked (LogonUI resident), and driven

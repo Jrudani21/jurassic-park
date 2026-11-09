@@ -39,7 +39,7 @@ Tiers and code defaults (`TIERS` in `llm.py`): `local` = LM Studio at `127.0.0.1
 `qwen/qwen3.5-9b`; `batch-local` = Colibri (`COLIBRI_BASE_URL`, unset = disabled, see
 `docs/COLIBRI_PLAN.md`); `free` = Bluesminds; `openrouter`; `groq`; `nvidia` (NIM);
 `flash` / `pro` = DeepSeek; `frontier` = Claude via the Claude Code OAuth token, falling back
-to the Hermes CLI. Note: `llm.py`'s module docstring and `GUIDE_LOCAL.md` still describe
+to the Ken CLI. Note: `llm.py`'s module docstring and `GUIDE_LOCAL.md` still describe
 `local` as Ollama `qwen3:8b`; the `TIERS` table (and a comment saying Ollama was retired
 2026-09-14) is current. `brain_client.py` still defaults to Ollama (`OLLAMA_BASE_URL`,
 `localhost:11434`).

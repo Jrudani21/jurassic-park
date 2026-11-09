@@ -107,6 +107,6 @@ Bot wiring (the assistant app, private):
 ## Cost profile (whole corps, per month)
 
 - 4 local bots: **$0**
-- 12 flash bots + Hermes delegation: bulk of spend (flash ≈ 3× cheaper than pro)
+- 12 flash bots + Ken delegation: bulk of spend (flash ≈ 3× cheaper than pro)
 - 3 pro bots: used sparingly (weekly macro, debates, analysis)
-- Hermes fallback chain: flash → claude-sonnet-5 → local (never erroring)
+- Ken fallback chain: flash → claude-sonnet-5 → local (never erroring)

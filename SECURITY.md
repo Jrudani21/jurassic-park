@@ -13,7 +13,7 @@ keys on the owner's machine and auto-publishes a dashboard.
   and machine-specific setup scripts (`setup-wsl-model-disk.*`, `fix-c-drive.*`, ...).
 - **Frontier tier reads the Claude Code OAuth access token** from
   `~/.claude/.credentials.json` (or `ANTHROPIC_CREDENTIALS_FILE`) and calls the Anthropic API
-  directly (`_claude_oauth_token()` in `llm.py`); on failure it shells out to the Hermes CLI
+  directly (`_claude_oauth_token()` in `llm.py`); on failure it shells out to the Ken CLI
   (`subprocess.run`, 600 s timeout). Treat any code path near this as credential-handling.
 - Secret scans (gitleaks v8.30.1, `--redact`, 2026-10-15): full git history - no leaks;
   `agents/`, `docs/`, `scripts/` working tree - no leaks. The only key-shaped string in tracked
@@ -47,7 +47,7 @@ Unknown - needs owner input.
 
 ## Verified against
 
-`agents/_shared/llm.py` (`_key`, `_claude_oauth_token`, `_chat_frontier_hermes`),
+`agents/_shared/llm.py` (`_key`, `_claude_oauth_token`, `_chat_frontier_ken`),
 `.gitignore`, `ROUTING.md`, `GUIDE_LOCAL.md`, `docs/generate_site.py` (`scrub`, commit block),
 `agents/04-sql-query-agent/agent.py`, `agents/01-web-research-agent/requirements.txt`,
 gitleaks runs, `git grep` for key patterns, `git config core.hooksPath`.

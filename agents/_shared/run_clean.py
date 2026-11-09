@@ -2,21 +2,21 @@
 # Copyright (c) 2026 Janak Rudani
 # SPDX-License-Identifier: MIT
 # Provenance: Jrudani21/jurassic-park/agents/_shared/run_clean.py 530864d3e44560cf
-"""Run a repo python script with a CLEAN env (Hermes venv-leak protection).
+"""Run a repo python script with a CLEAN env (Ken venv-leak protection).
 
-Lesson from Tier 1 post-mortem (2026-08-14): the Hermes desktop app exports
+Lesson from Tier 1 post-mortem (2026-08-14): the Ken desktop app exports
 PYTHONPATH/VIRTUAL_ENV/PYTHONHOME pointing at its py3.11 venv. Any repo script
-spawned from a Hermes cron inherits them and crashes (ken_service: pydantic_core
+spawned from a Ken cron inherits them and crashes (ken_service: pydantic_core
 ModuleNotFoundError). This wrapper strips all three, then execs the target.
 
 Use for ALL new cron scripts (Tier 2/3/4): point the cron at a thin wrapper
-in the local Hermes scripts dir that calls this with the real script path.
+in the local Ken scripts dir that calls this with the real script path.
 """
 import os
 import subprocess
 import sys
 
-# Strip Hermes venv leak (must happen before any python starts)
+# Strip Ken venv leak (must happen before any python starts)
 for k in ("PYTHONPATH", "VIRTUAL_ENV", "PYTHONHOME"):
     os.environ.pop(k, None)
 

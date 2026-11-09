@@ -47,10 +47,10 @@ from _shared import cost as cost_mod  # noqa: E402 — usage/cost ledger (never 
 
 
 def _key(name: str) -> str:
-    """Env var with fallback to Hermes .env and repo .env files.
+    """Env var with fallback to Ken .env and repo .env files.
 
     Agents are run by bots.json with limited env; this keeps flash/pro working
-    even when DEEPSEEK_API_KEY isn't exported (it lives in Hermes .env).
+    even when DEEPSEEK_API_KEY isn't exported (it lives in Ken .env).
     """
     v = os.getenv(name)
     if v:
@@ -147,11 +147,11 @@ TIERS = {
         "api_key": _key("DEEPSEEK_API_KEY"),
         "cost": "~$0.43/M",
     },
-    # Frontier = Claude via Hermes' own adapter (Claude Code OAuth, auto-refresh,
-    # identity headers). We bridge to `hermes chat` instead of re-implementing
-    # Anthropic OAuth — Hermes already handles token refresh + headers.
+    # Frontier = Claude via Ken' own adapter (Claude Code OAuth, auto-refresh,
+    # identity headers). We bridge to `ken chat` instead of re-implementing
+    # Anthropic OAuth — Ken already handles token refresh + headers.
     "frontier": {
-        "provider": "hermes",
+        "provider": "ken",
         "model": os.getenv("FRONTIER_MODEL", "claude-sonnet-5"),
         "cost": "Claude Pro OAuth (5h rolling window; in-app limit shown ~50% higher than documented — verified by user 2026-08-14)",
     },
@@ -392,15 +392,15 @@ def _chat_frontier(messages: list[dict], temperature: float, max_tokens: int) ->
     file (the standard ~/.claude/.credentials.json store) and call the
     Anthropic Messages API directly.
     Safety net: if the direct call fails (expired token, rate limit), fall
-    back to `hermes chat -Q` which handles refresh + identity headers.
+    back to `ken chat -Q` which handles refresh + identity headers.
     """
     model = TIERS["frontier"]["model"]
     prompt = "\n\n".join(f"{m['role'].upper()}: {m['content']}" for m in messages)
     try:
         return _chat_frontier_direct(model, prompt, temperature, max_tokens)
     except Exception as direct_err:
-        # Token expired / rate-limited / missing → let Hermes refresh & retry
-        return _chat_frontier_hermes(model, prompt, direct_err)
+        # Token expired / rate-limited / missing → let Ken refresh & retry
+        return _chat_frontier_ken(model, prompt, direct_err)
 
 
 def _claude_oauth_token() -> str | None:
@@ -449,59 +449,59 @@ def _chat_frontier_direct(model: str, prompt: str, temperature: float, max_token
     return resp.json()["content"][0]["text"]
 
 
-def _hermes_bin() -> str:
-    """Locate the Hermes/Ken CLI executable.
+def _ken_bin() -> str:
+    """Locate the Ken CLI executable.
 
-    Bare "hermes" is NOT on PATH on this machine (`shutil.which("hermes")` is
-    None) — the Ken fork ships the entrypoint as `.venv/Scripts/hermes.exe`
-    plus a `hermes` python launcher script that Windows will not exec directly.
-    Calling "hermes" therefore raised FileNotFoundError, so the OAuth-refresh
+    Bare "ken" is NOT on PATH on this machine (`shutil.which("ken")` is
+    None) — the Ken fork ships the entrypoint as `.venv/Scripts/ken.exe`
+    plus a `ken` python launcher script that Windows will not exec directly.
+    Calling "ken" therefore raised FileNotFoundError, so the OAuth-refresh
     safety net below never actually ran: the direct Anthropic call was the only
     working Claude path, and once its token expired there was no recovery.
 
-    Resolution order: HERMES_BIN override -> PATH -> known Ken venv location.
+    Resolution order: KEN_BIN override -> PATH -> known Ken venv location.
     """
     import shutil
 
-    override = os.getenv("HERMES_BIN")
+    override = os.getenv("KEN_BIN")
     if override and os.path.exists(override):
         return override
-    found = shutil.which("hermes") or shutil.which("hermes.exe")
+    found = shutil.which("ken") or shutil.which("ken.exe")
     if found:
         return found
     fallback = os.path.join(
         os.getenv("KEN_REPO", os.path.expanduser("~/ken-agent")),
-        ".venv", "Scripts", "hermes.exe")
-    return fallback if os.path.exists(fallback) else "hermes"
+        ".venv", "Scripts", "ken.exe")
+    return fallback if os.path.exists(fallback) else "ken"
 
 
-def _chat_frontier_hermes(model: str, prompt: str, direct_err: Exception) -> str:
-    """Safety net: hermes CLI auto-refreshes the OAuth token + identity headers."""
-    cmd = [_hermes_bin(), "chat", "-q", prompt, "-Q", "-m", f"anthropic/{model}"]
-    # The CLI reads its credential pool from HERMES_HOME; without it a shell
+def _chat_frontier_ken(model: str, prompt: str, direct_err: Exception) -> str:
+    """Safety net: ken CLI auto-refreshes the OAuth token + identity headers."""
+    cmd = [_ken_bin(), "chat", "-q", prompt, "-Q", "-m", f"anthropic/{model}"]
+    # The CLI reads its credential pool from KEN_HOME; without it a shell
     # that lacks the var falls back to a different (or empty) auth store.
     env = dict(os.environ)
-    env.setdefault("HERMES_HOME", os.getenv("KEN_HOME", os.path.expanduser("~/.ken-home")))
+    env.setdefault("KEN_HOME", os.getenv("KEN_HOME", os.path.expanduser("~/.ken-home")))
     proc = subprocess.run(
         cmd, capture_output=True, text=True, encoding="utf-8", env=env,
         errors="replace", timeout=600, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
     )
     if proc.returncode != 0:
         raise RuntimeError(
-            f"frontier {model} failed (direct: {direct_err}; hermes: {proc.stderr.strip()[:200]})"
+            f"frontier {model} failed (direct: {direct_err}; ken: {proc.stderr.strip()[:200]})"
         ) from direct_err
     out = proc.stdout.strip()
     if not out:
-        raise RuntimeError(f"frontier {model} failed (direct: {direct_err}; hermes: empty output)") from direct_err
+        raise RuntimeError(f"frontier {model} failed (direct: {direct_err}; ken: empty output)") from direct_err
     if "Switched to fallback model" in out or "Fallback activated" in out:
         raise RuntimeError(
-            f"frontier {model} unavailable; hermes fell back (direct: {direct_err})"
+            f"frontier {model} unavailable; ken fell back (direct: {direct_err})"
         ) from direct_err
     return _clean_cli_output(out)
 
 
 def _clean_cli_output(out: str) -> str:
-    """Strip hermes CLI startup noise (warnings, model-normalization notices)
+    """Strip ken CLI startup noise (warnings, model-normalization notices)
     and ANSI escape codes from the captured stdout, keeping only the answer."""
     import re
 

@@ -13,7 +13,7 @@ intent: "Run, verify, and review every agent deterministically. Machine-parseabl
 > Written for ALL consumers (bots included). Stable anchors are `## agent-<id>`.
 > Every command is exact and runnable. Exit codes are the contract.
 > Interpreter rule: **always** `<repo>/.venv/Scripts/python.exe` (py3.12).
-> Hermes/other shells inject a py3.11 venv via PYTHONPATH — strip it:
+> other shells inject a py3.11 venv via PYTHONPATH — strip it:
 > `env -u PYTHONPATH -u VIRTUAL_ENV -u PYTHONHOME` (PYTHONPATH alone is NOT enough).
 
 ---
@@ -105,7 +105,7 @@ git status --short && git remote -v   # expect origin=Jrudani21, NO upstream
 
 ## 7. PITFALLS (bot reminders)
 
-- `env -u PYTHONPATH` ALONE breaks py3.12 (Hermes 3.11 venv leaks pydantic_core) — use the full `-u` triple or the repo `.venv` directly.
+- `env -u PYTHONPATH` ALONE breaks py3.12 (Ken 3.11 venv leaks pydantic_core) — use the full `-u` triple or the repo `.venv` directly.
 - Groq needs browser UA (Cloudflare error-1010) — already in `llm.py get_client()`.
 - Don't `git add -A` — repo `.env` is gitignored but present; stage explicit paths.
 - New agent? Add it to `agents/`, ROUTING.md tier map, fleet `bots.json` tier, and this matrix (row + verify).
