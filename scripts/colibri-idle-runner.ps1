@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/scripts/colibri-idle-runner.ps1 9374bdfdb6ce2612
 # Runs the Colibri batch engine overnight, and yields the GPU on demand.
 #
 # Why not presence detection, which this script originally used:
@@ -26,8 +29,8 @@ param(
     [int]$YieldFreeMB    = 1500, # stop if free VRAM falls below this
     [int]$Port           = 8080,
     [string]$ModelDir    = '/models/mimo-v2.5',
-    [string]$ModelVhd    = 'E:\wsl-models.vhdx',
-    [string]$LogPath     = 'E:\Local\projects\jurassic-park\logs\colibri-idle.log'
+    [string]$ModelVhd    = $env:COLIBRI_MODEL_VHD,
+    [string]$LogPath     = (Join-Path $PSScriptRoot '..\logs\colibri-idle.log')
 )
 
 $ErrorActionPreference = 'Continue'

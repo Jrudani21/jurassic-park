@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Janak Rudani
+// SPDX-License-Identifier: MIT
+// Provenance: Jrudani21/jurassic-park/docs/data.js 9e0d3b70a87dd98c
 window.FLEET_DATA = {
  "generated_at": "2026-11-09T06:00:31",
  "fleets": [

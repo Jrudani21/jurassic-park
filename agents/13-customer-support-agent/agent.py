@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/13-customer-support-agent/agent.py f4815ba77c97de55
 """
 Customer Support Agent using LangGraph with RAG.
 

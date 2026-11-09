@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/cost.py 449308c1d672605d
 """Usage/cost ledger for the shared tiered LLM client (_shared/llm.py).
 
 Every billed API call in chat()/_chat_for_escalation appends one JSON line to

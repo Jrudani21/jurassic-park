@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/run_clean.py 530864d3e44560cf
 """Run a repo python script with a CLEAN env (Hermes venv-leak protection).
 
 Lesson from Tier 1 post-mortem (2026-08-14): the Hermes desktop app exports

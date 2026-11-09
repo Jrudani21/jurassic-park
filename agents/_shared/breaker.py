@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/breaker.py 21d9c9a51502b6a2
 """Circuit breaker for the shared LLM client (per-provider, no deps).
 
 Prevents retry storms + billed-token bleed when a provider (DeepSeek/Ollama/

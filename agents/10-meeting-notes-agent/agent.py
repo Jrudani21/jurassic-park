@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/10-meeting-notes-agent/agent.py 02a95c3ea252f5ee
 """
 Meeting Notes Agent.
 
@@ -10,9 +13,7 @@ Usage:
 """
 
 import argparse
-import json
 import os
-import re
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -68,17 +69,6 @@ Sarah: Any other blockers? No? Okay. Same time next week, November 10th.
 """
 
 
-def parse_json_response(text: str) -> dict:
-    cleaned = text.strip()
-    if cleaned.startswith("```"):
-        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-        cleaned = re.sub(r"\s*```$", "", cleaned)
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    if match:
-        cleaned = match.group(0)
-    return json.loads(cleaned)
-
-
 def generate_meeting_notes(transcript: str) -> dict:
     content, _tier = shared_llm.chat(
         "flash",
@@ -86,7 +76,7 @@ def generate_meeting_notes(transcript: str) -> dict:
         system=NOTES_PROMPT,
         temperature=0,
     )
-    return parse_json_response(content)
+    return shared_llm.parse_json_response(content)
 
 
 def format_notes(notes: dict) -> str:

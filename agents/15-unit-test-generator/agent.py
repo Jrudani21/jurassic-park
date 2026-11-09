@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/15-unit-test-generator/agent.py 53d8558c4b7a83c1
 """
 Unit Test Generator Agent.
 

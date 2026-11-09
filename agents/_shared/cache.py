@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/cache.py 8aa34b5faea41af0
 """Disk-backed LLM response cache for the agent fleet (_shared/llm.py).
 
 Layers (research-backed 2026-08, see ROUTING.md):

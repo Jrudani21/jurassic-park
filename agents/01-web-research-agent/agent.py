@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/01-web-research-agent/agent.py a6e562bdb2786033
 """
 Web Research Agent — keyless search + shared LLM client.
 

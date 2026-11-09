@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/prompts.py 89534c8016399d34
 """Cache-first prompt assembly for the fleet (used by _shared/llm.py).
 
 Two rules (research-backed; see brain/notes/2026-08-14-cache-first-architecture.md):

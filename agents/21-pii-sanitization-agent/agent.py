@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/21-pii-sanitization-agent/agent.py 4f39b92579c24d7a
 """
 PII Sanitization Agent — client for the TrustBoost API.
 

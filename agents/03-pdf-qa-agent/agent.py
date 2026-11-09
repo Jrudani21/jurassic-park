@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/03-pdf-qa-agent/agent.py a1d279385d050ec5
 """
 PDF Q&A Agent using LlamaIndex.
 

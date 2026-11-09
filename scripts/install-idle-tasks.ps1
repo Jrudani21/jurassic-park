@@ -1,8 +1,11 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/scripts/install-idle-tasks.ps1 31cc18fab28280b3
 # Registers the scheduled tasks that make the Colibri batch tier self-managing.
 #
 # Two tasks, because they solve two different problems:
 #
-#   ColibriAttachDisk  -- at logon, attaches E:\wsl-models.vhdx to WSL. A
+#   ColibriAttachDisk  -- at logon, attaches the model VHD to WSL. A
 #                         `wsl --mount` attachment does not survive the WSL VM
 #                         stopping (which WSL does on its own idle timeout), and
 #                         re-attaching needs administrator rights. Running this
@@ -21,9 +24,9 @@
 
 $ErrorActionPreference = 'Stop'
 
-$ScriptDir  = 'E:\Local\projects\jurassic-park\scripts'
+$ScriptDir  = $PSScriptRoot
 $RunnerPath = Join-Path $ScriptDir 'colibri-idle-runner.ps1'
-$ModelVhd   = 'E:\wsl-models.vhdx'
+$ModelVhd   = $env:COLIBRI_MODEL_VHD
 $User       = "$env:USERDOMAIN\$env:USERNAME"
 
 if (-not (Test-Path $RunnerPath)) {

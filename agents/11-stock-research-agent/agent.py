@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/11-stock-research-agent/agent.py c62c2ea41e9210ed
 """
 Stock Research Agent using Agno + Yahoo Finance.
 

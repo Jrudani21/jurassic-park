@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/data_collector.py 57e9c736742564b7
 """Data Collector — real, free-source fetching for the fleet.
 
 Free data sources (no API keys):

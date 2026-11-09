@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/16-documentation-writer/agent.py de1f0974882600a2
 """
 Documentation Writer Agent.
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/tool_cache.py f9b81f48680a42a1
 """Tool/API result cache for the agent fleet (L3 in the cost hierarchy).
 
 Caches the RESULTS of tool calls (web search, data fetches, API reads) keyed

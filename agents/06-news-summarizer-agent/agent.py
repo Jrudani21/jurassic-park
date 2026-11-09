@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/06-news-summarizer-agent/agent.py 9ed718c89164576c
 """
 News Summarizer Agent using AutoGen.
 

@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/scripts/bench_local_llm.py 31a5d310fae596f7
 """Benchmark any OpenAI-compatible local endpoint: TTFT, decode tok/s, VRAM.
 
 Written for the Colibri evaluation (docs/COLIBRI_PLAN.md), but provider-

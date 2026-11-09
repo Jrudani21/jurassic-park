@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/scripts/cost_report.py 0ec98beddd9da293
 """Summarize data/cost_ledger.jsonl — per-day / per-tier / per-model totals.
 
 Usage: python scripts/cost_report.py [days]

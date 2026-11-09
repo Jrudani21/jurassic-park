@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/docs/generate_site.py b6bf26361b61d00a
 """KEN Fleet site generator: refresh data.js from real sources, sanity-check pages, commit+push.
 
 Run nightly (cron) so the site reflects live fleet state. Never invents data -

@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/_shared/llm.py ae8b7b2b4f31b651
 """Shared tiered LLM client — the standard for ALL agents in this repo.
 
 Rule-based hybrid routing (see ROUTING.md in this repo root):
@@ -21,7 +24,9 @@ Usage:
     client = get_client("local")          # OpenAI-compatible, for langchain/llama_index/crewai
     tier = tier_of("extract")             # -> "local"
 """
+import json
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -465,7 +470,7 @@ def _hermes_bin() -> str:
     if found:
         return found
     fallback = os.path.join(
-        os.getenv("KEN_REPO", r"E:\Local\projects\ken-agent"),
+        os.getenv("KEN_REPO", os.path.expanduser("~/ken-agent")),
         ".venv", "Scripts", "hermes.exe")
     return fallback if os.path.exists(fallback) else "hermes"
 
@@ -476,7 +481,7 @@ def _chat_frontier_hermes(model: str, prompt: str, direct_err: Exception) -> str
     # The CLI reads its credential pool from HERMES_HOME; without it a shell
     # that lacks the var falls back to a different (or empty) auth store.
     env = dict(os.environ)
-    env.setdefault("HERMES_HOME", os.getenv("KEN_HOME", r"E:\Local\ken-home"))
+    env.setdefault("HERMES_HOME", os.getenv("KEN_HOME", os.path.expanduser("~/.ken-home")))
     proc = subprocess.run(
         cmd, capture_output=True, text=True, encoding="utf-8", env=env,
         errors="replace", timeout=600, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
@@ -518,9 +523,22 @@ def _clean_cli_output(out: str) -> str:
     return re.sub(r"\x1b\[[0-9;]*m", "", "\n".join(lines)).strip()
 
 
+def parse_json_response(text: str) -> dict:
+    """Parse a JSON object out of a model reply, tolerating a ```json fence and surrounding prose."""
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+    if match:
+        cleaned = match.group(0)
+    return json.loads(cleaned)
+
+
 if __name__ == "__main__":
     # Quick self-test: tier routing + a real zero-token local call.
     for kind in ["summarize", "template", "code", "analysis", "debate", "deep-analysis", ""]:
         print(f"  tier_of({kind!r:16}) -> {tier_of(kind)}")
     text, used = chat("local", "Reply with exactly: ok", max_tokens=8)
     print(f"  local chat -> {used}: {text.strip()!r}")
+

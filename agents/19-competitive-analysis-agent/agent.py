@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/19-competitive-analysis-agent/agent.py 6311ffcf9d6f296c
 """
 Competitive Analysis Agent using LangGraph.
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Janak Rudani
+# SPDX-License-Identifier: MIT
+# Provenance: Jrudani21/jurassic-park/agents/18-job-application-agent/agent.py ea094a8c8490ce18
 """
 Job Application Agent using CrewAI.
 
