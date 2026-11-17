@@ -1,5 +1,5 @@
 window.FLEET_DATA = {
- "generated_at": "2026-11-16T06:00:34",
+ "generated_at": "2026-11-17T10:27:48",
  "fleets": [
   {
    "id": "ops",
@@ -869,84 +869,6 @@ window.FLEET_DATA = {
   }
  },
  "cost": [
-  {
-   "ts": "2026-11-07T23:28:37.376731+00:00",
-   "tier": "nemotron",
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "prompt_tokens": 484,
-   "completion_tokens": 64,
-   "cache_hit_tokens": 0,
-   "peak": false,
-   "est_cost_usd": 0.0,
-   "cost_status": "unlabeled",
-   "caller": "title_generation",
-   "api_call_count": 1
-  },
-  {
-   "ts": "2026-11-07T23:29:00.595756+00:00",
-   "tier": "nemotron",
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "prompt_tokens": 4961,
-   "completion_tokens": 2951,
-   "cache_hit_tokens": 21920,
-   "peak": false,
-   "est_cost_usd": 0.0,
-   "cost_status": "untrusted:unknown",
-   "caller": "",
-   "api_call_count": 1
-  },
-  {
-   "ts": "2026-11-07T23:46:53.060982+00:00",
-   "tier": "ministral-8b",
-   "model": "ministral-8b-latest",
-   "prompt_tokens": 31,
-   "completion_tokens": 10,
-   "cache_hit_tokens": 209,
-   "peak": false,
-   "est_cost_usd": 0.0,
-   "cost_status": "unlabeled",
-   "caller": "title_generation",
-   "api_call_count": 1
-  },
-  {
-   "ts": "2026-11-07T23:46:54.041752+00:00",
-   "tier": "ministral-8b",
-   "model": "ministral-8b-latest",
-   "prompt_tokens": 25019,
-   "completion_tokens": 2,
-   "cache_hit_tokens": 0,
-   "peak": false,
-   "est_cost_usd": 0.0,
-   "cost_status": "untrusted:unknown",
-   "caller": "",
-   "api_call_count": 1
-  },
-  {
-   "ts": "2026-11-08T00:00:20.387149+00:00",
-   "tier": "nemotron",
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "prompt_tokens": 285,
-   "completion_tokens": 64,
-   "cache_hit_tokens": 0,
-   "peak": false,
-   "est_cost_usd": 0.0,
-   "cost_status": "unlabeled",
-   "caller": "title_generation",
-   "api_call_count": 1
-  },
-  {
-   "ts": "2026-11-08T00:05:01.788341+00:00",
-   "tier": "nemotron",
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "prompt_tokens": 45966,
-   "completion_tokens": 2386,
-   "cache_hit_tokens": 486624,
-   "peak": false,
-   "est_cost_usd": 0.0,
-   "cost_status": "untrusted:unknown",
-   "caller": "",
-   "api_call_count": 16
-  },
   {
    "ts": "2026-11-08T02:27:54.057159+00:00",
    "tier": "nemotron",
@@ -7368,6 +7290,84 @@ window.FLEET_DATA = {
    "cost_status": "untrusted:unknown",
    "caller": "",
    "api_call_count": 18
+  },
+  {
+   "ts": "2026-11-16T16:00:09.996188+00:00",
+   "tier": "ministral-8b",
+   "model": "ministral-8b-latest",
+   "prompt_tokens": 469,
+   "completion_tokens": 18,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "cost_status": "unlabeled",
+   "caller": "title_generation",
+   "api_call_count": 1
+  },
+  {
+   "ts": "2026-11-16T16:05:06.560061+00:00",
+   "tier": "nemotron",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "prompt_tokens": 120587,
+   "completion_tokens": 5322,
+   "cache_hit_tokens": 771584,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "cost_status": "untrusted:unknown",
+   "caller": "",
+   "api_call_count": 35
+  },
+  {
+   "ts": "2026-11-16T19:52:14.059078+00:00",
+   "tier": "ministral-8b",
+   "model": "ministral-8b-latest",
+   "prompt_tokens": 511,
+   "completion_tokens": 14,
+   "cache_hit_tokens": 0,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "cost_status": "unlabeled",
+   "caller": "title_generation",
+   "api_call_count": 1
+  },
+  {
+   "ts": "2026-11-16T19:54:56.799440+00:00",
+   "tier": "deepseek",
+   "model": "deepseek-v4-flash",
+   "prompt_tokens": 41627,
+   "completion_tokens": 26665,
+   "cache_hit_tokens": 449024,
+   "peak": false,
+   "est_cost_usd": 0.0145512472,
+   "cost_status": "estimated",
+   "caller": "",
+   "api_call_count": 11
+  },
+  {
+   "ts": "2026-11-17T01:54:02.383809+00:00",
+   "tier": "ministral-8b",
+   "model": "ministral-8b-latest",
+   "prompt_tokens": 482,
+   "completion_tokens": 18,
+   "cache_hit_tokens": 0,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "cost_status": "unlabeled",
+   "caller": "title_generation",
+   "api_call_count": 1
+  },
+  {
+   "ts": "2026-11-17T02:03:44.364197+00:00",
+   "tier": "nemotron",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "prompt_tokens": 214400,
+   "completion_tokens": 20345,
+   "cache_hit_tokens": 2810144,
+   "peak": true,
+   "est_cost_usd": 0.0,
+   "cost_status": "untrusted:unknown",
+   "caller": "",
+   "api_call_count": 66
   }
  ],
  "guardrail_events": [],
