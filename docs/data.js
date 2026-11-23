@@ -1,5 +1,5 @@
 window.FLEET_DATA = {
- "generated_at": "2026-11-22T12:32:46",
+ "generated_at": "2026-11-23T15:23:56",
  "fleets": [
   {
    "id": "ops",
@@ -869,19 +869,6 @@ window.FLEET_DATA = {
   }
  },
  "cost": [
-  {
-   "ts": "2026-11-11T18:54:48.999357+00:00",
-   "tier": "ministral-8b",
-   "model": "ministral-8b-latest",
-   "prompt_tokens": 234,
-   "completion_tokens": 9,
-   "cache_hit_tokens": 0,
-   "peak": false,
-   "est_cost_usd": 0.0,
-   "cost_status": "unlabeled",
-   "caller": "title_generation",
-   "api_call_count": 1
-  },
   {
    "ts": "2026-11-11T18:54:50.664933+00:00",
    "tier": "ministral-8b",
@@ -7368,6 +7355,19 @@ window.FLEET_DATA = {
    "cost_status": "untrusted:unknown",
    "caller": "",
    "api_call_count": 1
+  },
+  {
+   "ts": "2026-11-22T17:37:17.542179+00:00",
+   "tier": "nemotron",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "prompt_tokens": 130954,
+   "completion_tokens": 10464,
+   "cache_hit_tokens": 1416032,
+   "peak": false,
+   "est_cost_usd": 0.0,
+   "cost_status": "untrusted:unknown",
+   "caller": "",
+   "api_call_count": 26
   }
  ],
  "guardrail_events": [],
